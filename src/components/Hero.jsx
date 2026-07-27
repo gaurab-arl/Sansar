@@ -1,10 +1,15 @@
 
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "./Button";
 import { TiLocationArrow } from "react-icons/ti";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
+
 
 export default function Hero() {
     const [currentIndex, setCurrentIndex] = useState(1)
@@ -19,10 +24,14 @@ export default function Hero() {
     const miniRef = useRef(null);
 
 
+    const handleVideoLoad = () => {
+        setLoadVideo(prev => prev + 1);
+    }
+
     const handelMiniVideoPlayer = () => {
         setHasClicked(true)
         setCurrentIndex(currentIndex => {
-            if (currentIndex === 4) {
+            if (currentIndex === totalvideo) {
                 return 1;
             }
             return currentIndex + 1;
@@ -32,6 +41,7 @@ export default function Hero() {
     const getvideo = (index) => {
         return `videos/hero-${index}.mp4`;
     }
+
 
     useGSAP(() => {
         if (!hasclicked) return;
@@ -59,27 +69,45 @@ export default function Hero() {
         revertOnUpdate: true,
     });
 
-    useGSAP(() =>{
-        gsap.set( '#video-frame', {
-            clipPath: 'polygon(14% 0%, 72% 0%, 90% 90%, 0% 100%',
-            borderRadius: '0 0 40% 10%'
+    useGSAP(() => {
+        gsap.set('#video-frame', {
+            clipPath: "polygon(14% 0, 72% 0, 88% 90%, 0 95%)",
+            borderRadius: '0 0 40% 10%',
         })
 
-        gsap.from("#video-frame", {
-            clipPath: 'polygon(14% 27%, 70% 65%, 94% 66%, 1% 34%)',
-            borderRadius: '0 0 0 0',
+        gsap.from('#video-frame', {
+            clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+            borderRadius: "0% 0% 0% 0%",
             ease: 'power1.inout',
             scrollTrigger: {
                 trigger: "#video-frame",
                 start: "center center",
                 end: "bottom center",
-                scrub: 1,
+                scrub: true,
             }
         })
     })
 
+    useEffect(() => {
+        if (loadVideo >= 2) {
+            setLoading(false);
+        }
+    }, [loadVideo])
+
     return (
-        <div className="relative h-screen w-screen overflow-x-hidden">
+        <div className="relative h-[100vh] w-full overflow-hidden">
+
+            {isloading && (
+                <div className="flex-center absolute z-[100] h-dvh w-screen overflow-x-hidden bg-violet-50">
+                    <div className="three-body">
+                        <div className="three-body__dot"></div>
+                        <div className="three-body__dot"></div>
+                        <div className="three-body__dot"></div>
+
+                    </div>
+                </div>
+            )}
+
             <div id="video-frame" className="relative z-10 h-full w-screen overflow-hidden rounded-lg bg-blue-75">
                 <div className="mask-clip-path absolute-center absolute z-50 h-52 w-36 md:h-64 md:w-44 overflow-hidden rounded-2xl cursor-pointer hover:scale-100 scale-50transition-all duration-1000 opacity-0 hover:opacity-100 z-40">
                     <div
@@ -94,6 +122,7 @@ export default function Hero() {
                             muted
                             id="current-video"
                             src={getvideo((currentIndex % totalvideo) + 1)}
+                            onLoadedData={handleVideoLoad}
                         />
                     </div>
                 </div>
@@ -105,6 +134,7 @@ export default function Hero() {
                         muted
                         id="next-video"
                         src={getvideo(currentIndex)}
+                        onLoadedData={handleVideoLoad}
                     />
                 </div>
                 <div className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75">
@@ -120,10 +150,11 @@ export default function Hero() {
                         <Button id="watch-trailer" title="watch-traiiler" leftIcon={<TiLocationArrow />} containerClass="!bg-yellow-300 flex-center gap-1"> </Button>
                     </div>
                 </div>
-
-
-
             </div>
+
+            <h1 className="special-font hero-heading absolute bottom-5 right-5 text-black">
+                <b>gaming</b>
+            </h1>
         </div>
 
     );
