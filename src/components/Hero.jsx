@@ -162,6 +162,16 @@ export default function Hero() {
                 </div>
             </div>
 
+            <div className="absolute left-0 top-0  size-full text-black">
+                <div className="mt-24 px-5 sm:px-10">
+                    <div className="special-font text-black">
+                        <b className="hero-heading text-black">Welcome Home</b>
+                        <p className="mb-5 max-w-104 font-robert-regular text-black">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore autem vel odit voluptatem officia voluptas doloremque eaque. Dolorem amet voluptates ullam veritatis! Est, molestias ullam. Libero tenetur nesciunt officiis dolorem.</p>
+                    </div>
+                    <Button id="watch-trailer" title="watch-traiiler" leftIcon={<TiLocationArrow />} containerClass="!bg-yellow-300 flex-center gap-1"> </Button>
+                </div>
+            </div>
+
             <h1 className="special-font hero-heading absolute bottom-5 right-5 text-black">
                 <b>gaming</b>
             </h1>
