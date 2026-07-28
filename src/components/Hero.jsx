@@ -95,7 +95,7 @@ export default function Hero() {
     }, [loadVideo])
 
     return (
-        <div className="relative h-[100vh] w-full overflow-hidden">
+        <div id="hero" className="relative h-[100vh] w-full overflow-hidden">
 
             {isloading && (
                 <div className="flex-center absolute z-[100] h-dvh w-screen overflow-x-hidden bg-violet-50">
@@ -155,14 +155,14 @@ export default function Hero() {
                     <div className="mt-24 px-5 sm:px-10">
                         <div className="special-font text-blue-100">
                             <b className="hero-heading text-blue-100">Welcome Home</b>
-                            <p className="mb-5 max-w-104 font-robert-regular text-blue-100">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore autem vel odit voluptatem officia voluptas doloremque eaque. Dolorem amet voluptates ullam veritatis! Est, molestias ullam. Libero tenetur nesciunt officiis dolorem.</p>
+                            <p className="mb-5 max-w-104 font-robert-regular text-blue-100">Enter the Metagame Layer <br /> Unlease the Play Economy</p>
                         </div>
                         <Button id="watch-trailer" title="watch-traiiler" leftIcon={<TiLocationArrow />} containerClass="!bg-yellow-300 flex-center gap-1"> </Button>
                     </div>
                 </div>
             </div>
 
-            <div className="absolute left-0 top-0  size-full text-black">
+            {/* <div className="absolute left-0 top-0  size-full text-black">
                 <div className="mt-24 px-5 sm:px-10">
                     <div className="special-font text-black">
                         <b className="hero-heading text-black">Welcome Home</b>
@@ -170,7 +170,7 @@ export default function Hero() {
                     </div>
                     <Button id="watch-trailer" title="watch-traiiler" leftIcon={<TiLocationArrow />} containerClass="!bg-yellow-300 flex-center gap-1"> </Button>
                 </div>
-            </div>
+            </div> */}
 
             <h1 className="special-font hero-heading absolute bottom-5 right-5 text-black">
                 <b>gaming</b>

@@ -283,3 +283,18 @@ body {
     opacity: 0.8;
   }
 }
+
+.animate-bar{
+    height:8px;
+    animation: music .6s infinite alternate;
+}
+
+@keyframes music{
+    from{
+        height:8px;
+    }
+
+    to{
+        height:24px;
+    }
+}

@@ -24,7 +24,7 @@ export default function About() {
             width: "100vw",
             height: "100vh",
             borderRadius: 0,
-            duration: 1,
+            duration: 2.5,
             ease: 'power1.inOut',
         })
     })
