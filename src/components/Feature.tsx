@@ -2,13 +2,21 @@
 import { useRef } from "react"
 import { TiLocationArrow } from "react-icons/ti"
 
+interface BentoCardProps {
+    src: string;
+    title: React.ReactNode;
+    description?: string;
+    link?: string;
+    containerClass?: string;
+}
+
 const BentoCard = ({
     src,
     title,
     description,
     link,
     containerClass = "",
-}) => {
+}: BentoCardProps) => {
     const hoverButtonRef = useRef(null);
 
     return (

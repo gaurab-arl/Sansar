@@ -11,17 +11,18 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 
+
 export default function Hero() {
     const [currentIndex, setCurrentIndex] = useState(1)
     const [hasclicked, setHasClicked] = useState(false)
     const [isloading, setLoading] = useState(true)
-    const [loadVideo, setLoadVideo] = useState(0)
+    const [loadVideo, setLoadVideo] = useState<number>(0)
 
     const totalvideo = 4;
-    const nextVdieo = useRef(null)
+    const nextVdieo = useRef<HTMLVideoElement>(null)
 
-    const bgVideoRef = useRef(null);
-    const miniRef = useRef(null);
+    const bgVideoRef = useRef<HTMLVideoElement>(null);
+    const miniRef = useRef<HTMLDivElement>(null);
 
 
     const handleVideoLoad = () => {
@@ -38,7 +39,7 @@ export default function Hero() {
         })
     }
 
-    const getvideo = (index) => {
+    const getvideo = (index: number) => {
         return `videos/hero-${index}.mp4`;
     }
 
@@ -157,7 +158,11 @@ export default function Hero() {
                             <b className="hero-heading text-blue-100">Welcome Home</b>
                             <p className="mb-5 max-w-104 font-robert-regular text-blue-100">Enter the Metagame Layer <br /> Unlease the Play Economy</p>
                         </div>
-                        <Button id="watch-trailer" title="watch-traiiler" leftIcon={<TiLocationArrow />} containerClass="!bg-yellow-300 flex-center gap-1"> </Button>
+                        <Button id="watch-trailer"
+                            title="watch-traiiler"
+                            leftIcon={<TiLocationArrow />}
+                            containerClass="!bg-yellow-50 flex-center gap-1">
+                        </Button>
                     </div>
                 </div>
             </div>

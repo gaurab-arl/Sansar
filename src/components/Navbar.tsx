@@ -10,8 +10,12 @@ import { useWindowScroll } from "react-use";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
+type Navbar = {
+    name: string;
+    url: string;
+};
 
-const navbar = [
+const navbar: Navbar[] = [
     { name: "hero", url: "#hero" },
     { name: "about", url: "#about" },
     { name: "pricing", url: "#pricing" },
@@ -20,39 +24,40 @@ const navbar = [
 
 export default function Navbar() {
 
-    const navLinkRef = useRef(null);
-    const audioplayRef = useRef(null);
+    const navLinkRef = useRef<HTMLElement | null>(null);
+    const audioplayRef = useRef<HTMLAudioElement | null>(null);
+
     const [audioplay, setAudioplay] = useState(false);
 
     const lastScrollY = useRef(0);
     const [isNavVisible, setnavvissble] = useState(true);
 
     useEffect(() => {
-    if (audioplay) {
-        audioplayRef.current?.play();
-    } else {
-        audioplayRef.current.pause();
-    }
-}, [audioplay]);
+        if (audioplay) {
+            audioplayRef.current?.play();
+        } else {
+            audioplayRef.current?.pause();
+        }
+    }, [audioplay]);
 
     const { y: currentScrollY } = useWindowScroll();
-    useEffect(()=>{
+    useEffect(() => {
 
-        if(currentScrollY === 0) {
+        if (currentScrollY === 0) {
             setnavvissble(true)
-            navLinkRef.current.classList.remove('floating-nav')
+            navLinkRef.current?.classList.remove('floating-nav')
         }
-        else if(currentScrollY > lastScrollY.current){
+        else if (currentScrollY > lastScrollY.current) {
             setnavvissble(false)
-            navLinkRef.current.classList?.add('floating-nav')
-        }else{
+            navLinkRef.current?.classList?.add('floating-nav')
+        } else {
             setnavvissble(true)
-            navLinkRef.current.classList.remove('floating-nav')
+            navLinkRef.current?.classList.remove('floating-nav')
         }
         lastScrollY.current = currentScrollY
-    },[currentScrollY])
- 
-    useEffect(()=>{
+    }, [currentScrollY])
+
+    useEffect(() => {
         gsap.to(navLinkRef.current, {
             y: isNavVisible ? 0 : -100,
             opacity: isNavVisible ? 1 : 0,
@@ -85,7 +90,7 @@ export default function Navbar() {
             <div className="flex-center gap-5 text-white ">
                 {navbar.map((item, index) => (
                     <a
-                        key={index}
+                        key={item.name}
                         href={item.url}
                         className="nav-hover-btn text-white"
                     >

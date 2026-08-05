@@ -5,7 +5,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-function AnimatedTitle({ title, containerClass }) {
+interface TitleProps {
+    title: string;
+    containerClass?: string;
+}
+
+function AnimatedTitle({ title, containerClass }: TitleProps) {
     const containerRef = useRef(null);
 
     useGSAP(() => {
