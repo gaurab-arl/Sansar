@@ -27,7 +27,7 @@ export default function Story() {
                     />
                 </div>
                 <div className="story-img-container ">
-                    <div className="story-img-mask max-w-[900px]">
+                    <div className="story-img-mask max-w-[900px] w-200 flex items-ceter">
                         <div className="story-img-cotent ">
                             <img
                                 ref={frameRef}

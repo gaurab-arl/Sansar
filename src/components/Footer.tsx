@@ -29,8 +29,8 @@ type FooterNavProps = {
 
 const FooterNavRender = ({ section }: FooterNavProps) => {
     return (
-        <div className="footer-section w-full flex flex-col items-center">
-            <h3 className="font-bold capitalize mb-4 text-center">
+        <div className="footer-section flex flex-col">
+            <h3 className="font-bold capitalize mb-4">
                 {section.title}
             </h3>
 
@@ -51,12 +51,12 @@ const FooterNavRender = ({ section }: FooterNavProps) => {
 
 export default function Footer() {
     return (
-        <footer className="bg-black text-white px-10 py-12">
+        <footer className="bg-black text-white px-6 md:px-10 py-12">
             {/* Top Section */}
-            <div className="flex flex-row justify-between items-start gap-10 flex-wrap">
+            <div className="flex flex-col lg:flex-row justify-between items-start gap-12 flex-wrap">
 
                 {/* Branding */}
-                <div className="max-w-sm">
+                <div className="max-w-sm w-full lg:w-auto">
                     <h2 className="text-xl font-bold mb-3">Redefine Gaming</h2>
                     <p className="text-sm text-gray-400">
                         Exploring the future of gaming through insights, stories, and creativity.
@@ -71,14 +71,14 @@ export default function Footer() {
                 </div>
 
                 {/* Navigation Sections */}
-                <div className="flex flex-col md:flex-row lg:flex-row gap-20">
+                <div className="grid grid-cols-2 gap-8 w-full sm:flex sm:flex-row sm:w-auto md:gap-12 lg:gap-20">
                     {footerNav.map((section) => (
                         <FooterNavRender key={section.title} section={section} />
                     ))}
                 </div>
 
                 {/* Image */}
-                <div className="px-3 hidden md:block">
+                <div className="hidden lg:block w-full lg:w-auto px-3">
                     <div className="h-40 max-w-[320px] w-full rounded-md overflow-hidden">
                         <img
                             src="img/swordman.webp"
@@ -90,7 +90,7 @@ export default function Footer() {
             </div>
 
             {/* Bottom */}
-            <div className="border-t border-gray-800 pt-4 mt-8 text-sm text-gray-400 text-center">
+            <div className="border-t border-gray-800 pt-4 mt-10 text-sm text-gray-400 text-center">
                 © 2025 Redefine Gaming. All rights reserved.
             </div>
         </footer>
