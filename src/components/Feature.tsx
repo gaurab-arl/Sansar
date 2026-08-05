@@ -20,7 +20,7 @@ const BentoCard = ({
     const hoverButtonRef = useRef(null);
 
     return (
-        <div className={`relative size-full overflow-hidden rounded-md ${containerClass}`}>
+        <div className={`relative size-full border border-gray-900 overflow-hidden rounded-md ${containerClass}`}>
             <video
                 src={src}
                 loop
@@ -30,7 +30,7 @@ const BentoCard = ({
             />
 
             <div className="relative z-10 flex h-full flex-col justify-between p-5 text-blue-50">
-                <div>
+                <div className="text-white">
                     <h1 className="bento-title special-font">{title}</h1>
 
                     {description && (
@@ -81,7 +81,7 @@ export default function Feature() {
 
                 {/* ---------------- Second Section ---------------- */}
 
-                <div className="mb-7 grid h-[70vh] grid-cols-2 gap-7">
+                <div className="mb-7 grid h-[70vh]  md:grid-cols-2 gap-7">
 
                     {/* Left */}
                     <BentoCard
@@ -112,7 +112,7 @@ export default function Feature() {
 
                 {/* ---------------- Third Section ---------------- */}
 
-                <div className="grid h-[35vh] grid-cols-2 gap-7">
+                <div className="grid h-[35vh] md:grid-cols-2 gap-7">
 
                     <BentoCard
                         src="videos/feature-5.mp4"

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import About from "./components/About"
 import Navbar from "./components/Navbar";
 import Feature from "./components/Feature";
+import Story from "./components/Story";
 import Footer from "./components/Footer";
 
 import Lenis from "lenis";
@@ -42,6 +43,7 @@ export default function App() {
       <Hero />
       <About />
       <Feature />
+      <Story />
       <Footer />
     </main>
 

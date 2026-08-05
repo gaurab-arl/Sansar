@@ -71,14 +71,14 @@ export default function Footer() {
                 </div>
 
                 {/* Navigation Sections */}
-                <div className="flex gap-20">
+                <div className="flex flex-col md:flex-row lg:flex-row gap-20">
                     {footerNav.map((section) => (
                         <FooterNavRender key={section.title} section={section} />
                     ))}
                 </div>
 
                 {/* Image */}
-                <div className="px-3">
+                <div className="px-3 hidden md:block">
                     <div className="h-40 max-w-[320px] w-full rounded-md overflow-hidden">
                         <img
                             src="img/swordman.webp"
