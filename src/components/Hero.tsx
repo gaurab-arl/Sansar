@@ -152,7 +152,7 @@ export default function Hero() {
                     <b>Gaming</b>
                 </div>
 
-                <div className="absolute left-0 top-0  z-40 size-full">
+                <div className="absolute left-0 md:top-0 top-20  z-40 size-full">
                     <div className="mt-24 px-5 sm:px-10">
                         <div className="special-font text-blue-100">
                             <b className="hero-heading text-blue-100">Welcome Home</b>

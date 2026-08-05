@@ -1,56 +1,86 @@
-
-
-import { useRef } from "react"
-import AnimatedTitle from "./AnimatedTitle"
-import Button from "./Button"
-
-type TitleProps = {
-    title: string;
-    category: string;
-}
+import { useRef } from "react";
+import gsap from "gsap";
+import AnimatedTitle from "./AnimatedTitle";
+import Button from "./Button";
 
 export default function Story() {
-    const frameRef = useRef(null)
+    const frameRef = useRef<HTMLImageElement | null>(null);
+
+    const handleMouseLeave = () => {
+        if (!frameRef.current) return;
+
+        gsap.to(frameRef.current, {
+            rotateX: 0,
+            rotateY: 0,
+            duration: 0.5,
+            ease: "power3.out",
+        });
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLImageElement>) => {
+        const { clientX, clientY } = e;
+
+        const element = frameRef.current;
+        if (!element) return;
+
+        const rect = element.getBoundingClientRect();
+
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = ((y - centerY) / centerY) * -10;
+        const rotateY = ((x - centerX) / centerX) * 10;
+
+        gsap.to(element, {
+            rotateX,
+            rotateY,
+            transformPerspective: 500,
+            duration: 0.2,
+            ease: "power1.inOut",
+        });
+    };
 
     return (
-        <section id="story" className="relative w-full  text-blue-50 bg-black">
-            <div className="flex size-full flex-col items-center py-10 pb-24 ">
+        <section id="story" className="relative w-full text-blue-50 bg-black">
+            <div className="flex flex-col items-center py-10 pb-24">
+                <p className="text-sm uppercase">the multiversal ip world</p>
 
-                <p className="font-general text-sm uppercase md:text-[10px]">
-                    the multiversal ip world
-                </p>
-                <div className="realtive size-full flex items-center justify-center flex-wrap max-w-[900px]">
-
+                <div className="relative flex justify-center max-w-[900px]">
                     <AnimatedTitle
                         title="the story of a hidden realm"
-                        containerClass="mt-5 pointer-event-none mix-blend-difference relative z-10"
+                        containerClass="mt-5 pointer-events-none mix-blend-difference relative z-10"
                     />
                 </div>
-                <div className="story-img-container ">
-                    <div className="story-img-mask max-w-[900px] w-200 flex items-ceter">
-                        <div className="story-img-cotent ">
+
+                <div className="story-img-container">
+                    <div className="story-img-mask max-w-[1000px] w-full flex items-center">
+                        <div className="story-img-content">
                             <img
                                 ref={frameRef}
                                 src="/img/gallery-3.webp"
-                                className="size-full object-cover " />
-
+                                className="w-full h-full object-cover"
+                                onMouseMove={handleMouseMove}
+                                onMouseLeave={handleMouseLeave}
+                            />
                         </div>
-
                     </div>
-
                 </div>
-                <div className="absolute bottom-50 right-20 w-80 ">
-                    <div className="mb-4">
-                        <p className="text-white ">
-                            Where realms converge, lies Zentry and the
-                            boundless pillar. Discover its secrets and shape your
-                            fate amidst infinite opportunities.
-                        </p>
-                    </div>
-                    <Button title="discover prlogue" containerClass="uppercase text-sm" />
-                    
+
+                <div className="absolute bottom-60 right-20 w-80">
+                    <p className="text-white mb-4">
+                        Where realms converge, lies Zentry and the boundless pillar.
+                        Discover its secrets and shape your fate.
+                    </p>
+
+                    <Button
+                        title="discover prologue"
+                        containerClass="uppercase text-sm"
+                    />
                 </div>
             </div>
         </section>
-    )
+    );
 }
