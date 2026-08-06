@@ -1,18 +1,53 @@
-# React + Vite
+# Blogging Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A modern blogging web application built with React, Vite, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## 🚀 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Framework**: [React 19](https://react.dev/)
+- **Build Tool**: [Vite 8](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/) & [GSAP](https://gsap.com/)
+- **Icons**: [Lucide React](https://lucide.dev/) & [React Icons](https://react-icons.github.io/react-icons/)
+- **Smooth Scrolling**: [Lenis](https://lenis.studiofreight.com/)
 
-## React Compiler
+## 📦 Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
 
-## Expanding the Oxlint configuration
+- Node.js (v18 or higher recommended)
+- npm, yarn, or pnpm
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
-# bloging_webapp
+### Installation
 
+1. Clone the repository (if you haven't already):
+   ```bash
+   git clone <your-repo-url>
+   ```
+
+2. Navigate into the project directory:
+   ```bash
+   cd blog
+   ```
+
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Development Server
+
+Run the local development server:
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser to view the application.
+
+## 🛠️ Scripts
+
+- `npm run dev` - Starts the development server
+- `npm run build` - Builds the app for production
+- `npm run lint` - Runs Oxlint to analyze the code
+- `npm run preview` - Previews the production build locally
