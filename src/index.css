@@ -284,17 +284,29 @@ body {
   }
 }
 
-.animate-bar{
-    height:8px;
-    animation: music .6s infinite alternate;
+.animate-bar {
+  height: 8px;
+  animation: music .6s infinite alternate;
 }
 
-@keyframes music{
-    from{
-        height:8px;
-    }
+@keyframes music {
+  from {
+    height: 8px;
+  }
 
-    to{
-        height:24px;
-    }
+  to {
+    height: 24px;
+  }
+}
+
+.overlay-button {
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(circle at var(--x) var(--y),
+      rgba(255, 255, 255, .35),
+      transparent 65%);
+
+  pointer-events: none;
 }

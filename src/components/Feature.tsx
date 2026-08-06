@@ -3,6 +3,7 @@ import { useRef } from "react"
 import { TiLocationArrow } from "react-icons/ti"
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { motion } from 'framer-motion'
 
 interface BentoCardProps {
     src: string;
@@ -21,24 +22,42 @@ const BentoCard = ({
 }: BentoCardProps) => {
 
     const containerRef = useRef<HTMLDivElement>(null);
-    const hoverButtonRef = useRef<HTMLButtonElement>(null);
+    const overlayRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLDivElement>(null);
     useGSAP(() => {
         gsap.set(containerRef.current, {
             scale: 1,
             opacity: 1
         })
-
+        gsap.set(buttonRef.current, {
+            opacity: 1
+        })
     }, [])
 
-    const handleHover = () => {
-        gsap.to(containerRef.current, {
-            scale: 0.96,
-            duration: 0.3,
-            ease: "power2.out",
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+
+        const rect = buttonRef.current!.getBoundingClientRect();
+
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        gsap.to(buttonRef.current, {
+            "--x": `${x}px`,
+            "--y": `${y}px`,
+            duration: .2
         });
 
+        gsap.to(overlayRef.current, {
+            opacity: 1,
+            duration: .2
+        });
 
-    };
+        gsap.to(containerRef.current, {
+            scale: .95,
+            duration: .2
+        })
+
+    }
 
     const handleLeave = () => {
         gsap.to(containerRef.current, {
@@ -47,12 +66,18 @@ const BentoCard = ({
             ease: "power2.out",
         });
 
+        gsap.to(containerClass, {
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out",
+        })
+
     };
 
     return (
         <div className={`relative size-full border border-gray-900 overflow-hidden rounded-md ${containerClass}`}
             ref={containerRef}
-            onMouseEnter={handleHover}
+            onMouseMove={handleMouseMove}
             onMouseLeave={handleLeave}>
             <video
                 src={src}
@@ -74,10 +99,14 @@ const BentoCard = ({
                 </div>
 
                 <div
-                    ref={hoverButtonRef}
+                    ref={buttonRef}
+                    onMouseEnter={handleMouseMove}
+                    onMouseLeave={handleLeave}
                     className="border-hsla relative flex w-fit items-center gap-1 overflow-hidden rounded-full bg-black px-5 py-2 text-xs uppercase text-white/20"
                 >
-                    <div className="pointer-events-none absolute -inset-px opacity-0 transition duration-300" />
+                    <div
+                        ref={overlayRef}
+                        className="overlay-button pointer-events-none absolute -inset-px opacity-0 transition duration-300 w-full h-[50px] bg-gray-900" />
                     <TiLocationArrow className="relative z-20" />
                     <p className="relative z-20">Coming Soon</p>
                 </div>
@@ -145,7 +174,9 @@ export default function Feature() {
 
                 {/* ---------------- Third Section ---------------- */}
 
-                <div className="grid h-[35vh] md:grid-cols-2 gap-7">
+                <motion.div
+
+                    className="grid h-[35vh] md:grid-cols-2 gap-7">
 
                     <BentoCard
                         src="videos/feature-5.mp4"
@@ -159,7 +190,7 @@ export default function Feature() {
                         description="Create and share experiences."
                     />
 
-                </div>
+                </motion.div>
 
             </div>
         </section>
