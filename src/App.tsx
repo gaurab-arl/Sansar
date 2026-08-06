@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import Feature from "./components/Feature";
 import Story from "./components/Story";
 import Footer from "./components/Footer";
+import Contact from "./components/Contact";
 
 import Lenis from "lenis";
 
@@ -44,6 +45,7 @@ export default function App() {
       <About />
       <Feature />
       <Story />
+      <Contact />
       <Footer />
     </main>
 

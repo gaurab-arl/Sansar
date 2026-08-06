@@ -87,7 +87,7 @@ export default function Navbar() {
                 />
             </div>
 
-            <div className="flex-center gap-5 text-white hidden md:block">
+            <div className="flex-center gap-5 text-white hidden md:flex">
                 {navbar.map((item, index) => (
                     <a
                         key={item.name}

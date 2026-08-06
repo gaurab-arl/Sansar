@@ -1,6 +1,8 @@
 
 import { useRef } from "react"
 import { TiLocationArrow } from "react-icons/ti"
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 interface BentoCardProps {
     src: string;
@@ -17,10 +19,41 @@ const BentoCard = ({
     link,
     containerClass = "",
 }: BentoCardProps) => {
-    const hoverButtonRef = useRef(null);
+
+    const containerRef = useRef<HTMLDivElement>(null);
+    const hoverButtonRef = useRef<HTMLButtonElement>(null);
+    useGSAP(() => {
+        gsap.set(containerRef.current, {
+            scale: 1,
+            opacity: 1
+        })
+
+    }, [])
+
+    const handleHover = () => {
+        gsap.to(containerRef.current, {
+            scale: 0.96,
+            duration: 0.3,
+            ease: "power2.out",
+        });
+
+
+    };
+
+    const handleLeave = () => {
+        gsap.to(containerRef.current, {
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out",
+        });
+
+    };
 
     return (
-        <div className={`relative size-full border border-gray-900 overflow-hidden rounded-md ${containerClass}`}>
+        <div className={`relative size-full border border-gray-900 overflow-hidden rounded-md ${containerClass}`}
+            ref={containerRef}
+            onMouseEnter={handleHover}
+            onMouseLeave={handleLeave}>
             <video
                 src={src}
                 loop
