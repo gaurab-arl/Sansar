@@ -13,8 +13,8 @@ export default function About() {
             scrollTrigger: {
                 trigger: '#clip',
                 start: 'center center',
-                end: ' +=800 center',
-                scrub: 0.5,
+                end: ' +=900 center',
+                scrub: 1,
                 pin: true,
                 pinSpacing: true,
             }
@@ -24,8 +24,8 @@ export default function About() {
             width: "100vw",
             height: "100vh",
             borderRadius: 0,
-            duration: 2.5,
-            ease: 'power1.inOut',
+            duration: 3,
+            ease: 'power2.out',
         })
     })
 
