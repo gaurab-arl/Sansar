@@ -97,6 +97,20 @@ const formatCurrency = (amount: number, currency: Currency = 'USD'): string => {
   })}`;
 };
 
+const getVisibleBreakdownEntries = (
+  breakdown: Record<string, BreakdownItem>,
+  currency: Currency,
+) => Object.entries(breakdown).filter(([category]) => !(category === 'visa' && currency === 'NPR'));
+
+const getItineraryForDays = (days: number): typeof sampleItinerary =>
+  Array.from({ length: days }, (_, index) => {
+    const template = sampleItinerary[index % sampleItinerary.length];
+    return {
+      ...template,
+      day: index + 1,
+    };
+  });
+
 const calculateBudget = (input: BudgetInput): BudgetResult => {
   const { days, people, style, includeAttractions, includeVisa, selectedActivities, currency } = input;
   const styleData = getBudgetStyle(style);
@@ -107,7 +121,8 @@ const calculateBudget = (input: BudgetInput): BudgetResult => {
   const dailyActivities = (styleData.dailyBudgetUSD * styleData.breakdown.activities) / 100;
 
   const attractionFees = includeAttractions ? getTotalAttractionFees() : 0;
-  const visaCost = includeVisa ? getVisaCost(days) : 0;
+  const applyVisa = includeVisa && currency !== 'NPR';
+  const visaCost = applyVisa ? getVisaCost(days) : 0;
 
   const selectedActivityCost = selectedActivities.reduce((total, activityId) => {
     const matched = activities.find((activity) => activity.id === activityId);
@@ -129,7 +144,7 @@ const calculateBudget = (input: BudgetInput): BudgetResult => {
     breakdown.attractions = { amount: attractionFees, percentage: 0 };
   }
 
-  if (includeVisa) {
+  if (applyVisa) {
     breakdown.visa = { amount: visaCost, percentage: 0 };
   }
 
@@ -184,7 +199,7 @@ const calculateBudget = (input: BudgetInput): BudgetResult => {
         return option.tier === 'Luxury';
       }),
       food: styleFood.slice(0, 5),
-      itinerary: sampleItinerary,
+      itinerary: getItineraryForDays(days),
     },
     summary: {
       style: styleData.name,
@@ -251,7 +266,7 @@ const calculateReverseBudget = (input: ReverseBudgetInput): ReverseBudgetResult 
   // Visa cost depends on trip length (>15 days costs more), so estimate with
   // the short-stay rate first, then re-check once we know roughly how long a
   // trip this budget affords instead of hardcoding a single flat value.
-  let visaCost = getVisaCost(15);
+  let visaCost = currency === 'NPR' ? 0 : getVisaCost(15);
   let budgetAfterFixed = totalBudgetUSD - visaCost - attractionFees;
   if (budgetAfterFixed <= 0) {
     return null;
@@ -262,7 +277,7 @@ const calculateReverseBudget = (input: ReverseBudgetInput): ReverseBudgetResult 
     return null;
   }
 
-  const refinedVisaCost = getVisaCost(maxDays);
+  const refinedVisaCost = currency === 'NPR' ? 0 : getVisaCost(maxDays);
   if (refinedVisaCost !== visaCost) {
     visaCost = refinedVisaCost;
     budgetAfterFixed = totalBudgetUSD - visaCost - attractionFees;
@@ -280,7 +295,7 @@ const calculateReverseBudget = (input: ReverseBudgetInput): ReverseBudgetResult 
   const suggestedDays =
     preferredDays && preferredDays >= 1 && preferredDays <= maxDays ? preferredDays : autoSuggestedDays;
 
-  const finalVisaCost = getVisaCost(suggestedDays);
+  const finalVisaCost = currency === 'NPR' ? 0 : getVisaCost(suggestedDays);
   const costPerDay = (dailyCostPerPerson * people);
   const costPerPersonDaily = dailyCostPerPerson;
 
@@ -306,11 +321,14 @@ const calculateReverseBudget = (input: ReverseBudgetInput): ReverseBudgetResult 
       amount: attractionFees,
       percentage: 0,
     },
-    visa: {
+  };
+
+  if (currency !== 'NPR') {
+    breakdown.visa = {
       amount: finalVisaCost,
       percentage: 0,
-    },
-  };
+    };
+  }
 
   const styleMatchingActivities = activities.filter((activity) => {
     if (style === 'backpacker') return activity.costUSD <= 50;
@@ -332,7 +350,7 @@ const calculateReverseBudget = (input: ReverseBudgetInput): ReverseBudgetResult 
     suggestedDays,
     costPerDay,
     costPerPersonDaily,
-    itinerary: sampleItinerary.slice(0, suggestedDays),
+    itinerary: getItineraryForDays(suggestedDays),
     breakdown,
     recommendations: {
       attractions: styleMatchingAttractions.slice(0, 5),
@@ -677,7 +695,7 @@ export default function BudgetPlanner() {
                     {activeTab === 'breakdown' && (
                       <div className="space-y-4">
                         <h3 className="text-xl font-black">Cost breakdown</h3>
-                        {Object.entries(result.breakdown).map(([category, data]) => (
+                        {getVisibleBreakdownEntries(result.breakdown, result.summary.currency).map(([category, data]) => (
                           <div key={category}>
                             <div className="mb-1 flex items-center justify-between gap-4 text-sm text-slate-700">
                               <span className="capitalize">{category}</span>
@@ -962,7 +980,7 @@ export default function BudgetPlanner() {
                   <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
                     <h3 className="text-2xl font-black">Budget Breakdown</h3>
                     <div className="space-y-3">
-                      {Object.entries(reverseResult.breakdown).map(([category, data]) => (
+                      {getVisibleBreakdownEntries(reverseResult.breakdown, reverseBudgetData.currency).map(([category, data]) => (
                         <div key={category}>
                           <div className="mb-1 flex items-center justify-between gap-4 text-sm text-slate-700">
                             <span className="capitalize">{category}</span>
