@@ -5,7 +5,11 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Button from "./Button";
 import { TiLocationArrow } from "react-icons/ti";
+<<<<<<< HEAD
 import {Routes, Route, Link} from "react-router-dom";
+=======
+import { Link } from "react-router-dom";
+>>>>>>> 7cbb7466563614a90fb8dcd4368aac926b57b449
 
 import { useWindowScroll } from "react-use";
 
@@ -17,11 +21,19 @@ type Navbar = {
 };
 
 const navbar: Navbar[] = [
+<<<<<<< HEAD
   { name: "Home", url: "/" },
   { name: "Discover", url: "/discover" },
   { name: "Destinations", url: "/destinations" },
   { name: "Budget", url: "/budget-planner" },
 ];
+=======
+    { name: "hero", url: "/" },
+    { name: "discover", url: "/discover" },
+    { name: "destination", url: "/destination" },
+    { name: "budget", url: "/budget" },
+]
+>>>>>>> 7cbb7466563614a90fb8dcd4368aac926b57b449
 
 export default function Navbar() {
 
@@ -122,9 +134,13 @@ export default function Navbar() {
                         />
                     ))}
                 </button>
+<<<<<<< HEAD
 
             </div>
 
+=======
+            </div>
+>>>>>>> 7cbb7466563614a90fb8dcd4368aac926b57b449
         </header>
     )
 }
