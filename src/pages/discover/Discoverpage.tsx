@@ -72,12 +72,7 @@ const bodyLg = { ...fontBody, fontSize: "19px", lineHeight: 1.6, fontWeight: 400
 const portalClip = "polygon(28px 0,100% 0,100% calc(100% - 28px),calc(100% - 28px) 100%,0 100%,0 28px)";
 const portalClipSm = "polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)";
 
-const NAV_ITEMS = [
-    // { key: "discover", label: "Discover" },
-    // { key: "heritage", label: "Heritage Sites" },
-    // { key: "trending", label: "Trending" },
-    // { key: "planner", label: "Budget Planner" },
-];
+
 
 /** Wikimedia Commons — freely licensed (CC BY / CC BY-SA), stable Special:FilePath links */
 const WM = "https://commons.wikimedia.org/wiki/Special:FilePath/";
@@ -205,22 +200,6 @@ function RotatingBadge() {
     );
 }
 
-function NavLink({ item, active, onClick }) {
-    return (
-        <a
-            href="#"
-            aria-current={active ? "page" : undefined}
-            onClick={(e) => {
-                e.preventDefault();
-                onClick(item.key);
-            }}
-            style={{ ...eyebrow, color: active ? z.lime : z.mist }}
-            className="uppercase transition-colors hover:opacity-90"
-        >
-            {item.label}
-        </a>
-    );
-}
 
 function HeritageArticle({ site, index, reverse }) {
     const num = String(index + 1).padStart(2, "0");
@@ -330,44 +309,6 @@ export default function Discover() {
       `}</style>
 
             {/* Header */}
-            <header className="fixed top-0 w-full z-50 backdrop-blur-xl" style={{ backgroundColor: `${z.ink}dd`, borderBottom: `1px solid ${z.panelLine}` }}>
-                <div className="h-20 w-full px-5 md:px-16 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 flex items-center justify-center" style={{ backgroundColor: z.lime, clipPath: portalClipSm }}>
-                            <Mountain size={18} color={z.limeInk} />
-                        </div>
-                        <span style={{ ...fontDisplay, fontSize: "20px", color: z.paper }} className="tracking-tight">
-                            SANSAR
-                        </span>
-                    </div>
-                    <nav className="hidden md:flex items-center gap-8">
-                        {NAV_ITEMS.map((item) => (
-                            <NavLink key={item.key} item={item} active={activePath === item.key} onClick={setActivePath} />
-                        ))}
-                    </nav>
-                    <div className="hidden md:flex items-center gap-5">
-                        <Search size={18} className="cursor-pointer" style={{ color: z.mist }} />
-                        <button
-                            className="px-5 py-2.5 flex items-center gap-2"
-                            style={{ backgroundColor: z.lime, color: z.limeInk, clipPath: portalClipSm, ...eyebrow }}
-                        >
-                            PLAN A TRIP
-                        </button>
-                    </div>
-                    <button className="md:hidden" onClick={() => setMenuOpen((v) => !v)}>
-                        {menuOpen ? <X color={z.paper} /> : <Menu color={z.paper} />}
-                    </button>
-                </div>
-                {menuOpen && (
-                    <div className="md:hidden flex flex-col gap-5 px-5 pb-6" style={{ borderTop: `1px solid ${z.panelLine}` }}>
-                        {NAV_ITEMS.map((item) => (
-                            <div key={item.key} className="pt-4">
-                                <NavLink item={item} active={activePath === item.key} onClick={setActivePath} />
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </header>
 
             <main className="w-full pt-20">
                 {/* HERO */}
