@@ -31,104 +31,61 @@ function PlaceModel({ url }) {
 function CameraController({
     progress,
     cameraPath,
+    selectedHotspot,
+    modelScale,
 }) {
     const { camera } = useThree();
 
-    const currentPosition = useMemo(
-        () => new THREE.Vector3(),
-        []
-    );
-
-    const nextPosition = useMemo(
-        () => new THREE.Vector3(),
-        []
-    );
-
-    const currentLookAt = useMemo(
-        () => new THREE.Vector3(),
-        []
-    );
-
-    const nextLookAt = useMemo(
-        () => new THREE.Vector3(),
-        []
-    );
-
-    const interpolatedLookAt = useMemo(
-        () => new THREE.Vector3(),
-        []
-    );
+    const currentPosition = useMemo(() => new THREE.Vector3(), []);
+    const nextPosition = useMemo(() => new THREE.Vector3(), []);
+    const currentLookAt = useMemo(() => new THREE.Vector3(), []);
+    const nextLookAt = useMemo(() => new THREE.Vector3(), []);
+    
+    const targetPosition = useMemo(() => new THREE.Vector3(), []);
+    const targetLookAt = useMemo(() => new THREE.Vector3(), []);
+    const interpolatedLookAt = useMemo(() => new THREE.Vector3(), []);
 
     useFrame(() => {
         if (!cameraPath || cameraPath.length < 2) {
             return;
         }
 
-        const scaledProgress =
-            progress * (cameraPath.length - 1);
-
-        const index = Math.min(
-            Math.floor(scaledProgress),
-            cameraPath.length - 2
-        );
-
-        const localProgress =
-            scaledProgress - index;
+        const scaledProgress = progress * (cameraPath.length - 1);
+        const index = Math.min(Math.floor(scaledProgress), cameraPath.length - 2);
+        const localProgress = scaledProgress - index;
 
         const current = cameraPath[index];
         const next = cameraPath[index + 1];
 
-        /* ---------------------------------------------
-           CAMERA POSITION
-        --------------------------------------------- */
+        // 1. Calculate the scroll-based target position and lookAt
+        currentPosition.set(current.position[0], current.position[1], current.position[2]);
+        nextPosition.set(next.position[0], next.position[1], next.position[2]);
 
-        currentPosition.set(
-            current.position[0],
-            current.position[1],
-            current.position[2]
-        );
+        const smoothProgress = THREE.MathUtils.smoothstep(localProgress, 0, 1);
+        targetPosition.lerpVectors(currentPosition, nextPosition, smoothProgress);
 
-        nextPosition.set(
-            next.position[0],
-            next.position[1],
-            next.position[2]
-        );
+        currentLookAt.set(current.lookAt[0], current.lookAt[1], current.lookAt[2]);
+        nextLookAt.set(next.lookAt[0], next.lookAt[1], next.lookAt[2]);
+        targetLookAt.lerpVectors(currentLookAt, nextLookAt, smoothProgress);
 
-        const smoothProgress =
-            THREE.MathUtils.smoothstep(
-                localProgress,
-                0,
-                1
-            );
+        // 2. If a hotspot is selected, override the targets
+        if (selectedHotspot) {
+            const hotspotPos = new THREE.Vector3(
+                selectedHotspot.position[0],
+                selectedHotspot.position[1],
+                selectedHotspot.position[2]
+            ).multiplyScalar(modelScale);
 
-        camera.position.lerpVectors(
-            currentPosition,
-            nextPosition,
-            smoothProgress
-        );
+            // Offset the camera slightly relative to the hotspot
+            const offset = new THREE.Vector3(2, 1.5, 2);
+            targetPosition.copy(hotspotPos).add(offset);
+            targetLookAt.copy(hotspotPos);
+        }
 
-        /* ---------------------------------------------
-           CAMERA LOOK AT
-        --------------------------------------------- */
-
-        currentLookAt.set(
-            current.lookAt[0],
-            current.lookAt[1],
-            current.lookAt[2]
-        );
-
-        nextLookAt.set(
-            next.lookAt[0],
-            next.lookAt[1],
-            next.lookAt[2]
-        );
-
-        interpolatedLookAt.lerpVectors(
-            currentLookAt,
-            nextLookAt,
-            smoothProgress
-        );
-
+        // 3. Smoothly animate the camera towards the final targets
+        camera.position.lerp(targetPosition, 0.05);
+        interpolatedLookAt.lerp(targetLookAt, 0.05);
+        
         camera.lookAt(interpolatedLookAt);
     });
 
@@ -178,6 +135,7 @@ export default function DestinationScene({
     destination,
     progress,
     onSelectHotspot,
+    selectedHotspot,
 }) {
     const model = destination.model;
 
@@ -246,6 +204,8 @@ export default function DestinationScene({
             <CameraController
                 progress={progress}
                 cameraPath={model.cameraPath}
+                selectedHotspot={selectedHotspot}
+                modelScale={MODEL_SCALE}
             />
 
             {/* =================================================

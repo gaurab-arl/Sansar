@@ -17,6 +17,7 @@ export default function ModelExperience({ destination, onClose }) {
               overflow-x-hidden
               bg-[#F7F7F2]
             "
+            data-lenis-prevent="true"
             onScroll={(e) => {
                 const element = e.currentTarget;
 
@@ -58,6 +59,7 @@ export default function ModelExperience({ destination, onClose }) {
                         destination={destination}
                         progress={progress}
                         onSelectHotspot={setSelectedHotspot}
+                        selectedHotspot={selectedHotspot}
                     />
                 </div>
             </div>
