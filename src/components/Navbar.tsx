@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Button from "./Button";
 import { TiLocationArrow } from "react-icons/ti";
+import { Link } from "react-router-dom";
 
 import { useWindowScroll } from "react-use";
 
@@ -16,10 +17,10 @@ type Navbar = {
 };
 
 const navbar: Navbar[] = [
-    { name: "hero", url: "#hero" },
-    { name: "about", url: "#about" },
-    { name: "pricing", url: "#pricing" },
-    { name: "contact", url: "#contact" },
+    { name: "hero", url: "/" },
+    { name: "discover", url: "/discover" },
+    { name: "destination", url: "/destination" },
+    { name: "budget", url: "/budget" },
 ]
 
 export default function Navbar() {
@@ -89,13 +90,13 @@ export default function Navbar() {
 
             <div className="flex-center gap-5 text-white hidden md:flex">
                 {navbar.map((item, index) => (
-                    <a
+                    <Link
                         key={item.name}
-                        href={item.url}
+                        to={item.url}
                         className="nav-hover-btn text-white"
                     >
                         {item.name}
-                    </a>
+                    </Link>
                 ))}
 
 
@@ -121,9 +122,7 @@ export default function Navbar() {
                         />
                     ))}
                 </button>
-
             </div>
-
         </header>
     )
 }

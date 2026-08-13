@@ -20,6 +20,8 @@ A modern blogging web application built with React, Vite, and Tailwind CSS.
 
 ### Installation
 
+6
+
 1. Clone the repository (if you haven't already):
    ```bash
    git clone <your-repo-url>
