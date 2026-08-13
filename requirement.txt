@@ -11,3 +11,52 @@
 
       npm run dev
 
+
+DEPLOYMENT FIXES FOR VERCEL:
+
+1. FIX PACKAGE-LOCK.JSON ERROR:
+   
+   Delete and regenerate the package-lock.json:
+   
+      rm package-lock.json
+      npm install
+      git add package-lock.json
+      git commit -m "Regenerate package-lock.json"
+      git push
+
+2. FIX LARGE CHUNK SIZE WARNING (1.56 MB bundle):
+   
+   Update vite.config.js to enable code splitting:
+   
+   export default {
+     build: {
+       rolldownOptions: {
+         output: {
+           manualChunks: {
+             'three': ['three'],
+             'gsap': ['gsap', '@gsap/react'],
+             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+           }
+         }
+       },
+       chunkSizeWarningLimit: 1000
+     }
+   }
+
+3. ALTERNATIVE: Use dynamic imports to code-split
+   
+   Instead of: import Component from './pages/Budget'
+   Use: const Component = lazy(() => import('./pages/Budget'))
+   
+   Wrap lazy imports with Suspense:
+   <Suspense fallback={<div>Loading...</div>}>
+     <Component />
+   </Suspense>
+
+4. VERIFY AFTER FIXES:
+   
+   Test locally:
+      npm run build
+   
+   Then push to GitHub (automatically deploys to Vercel):
+      git push
