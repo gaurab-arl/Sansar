@@ -4,7 +4,6 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Button from "./Button";
 import { TiLocationArrow } from "react-icons/ti";
-import {Routes, Route, Link} from "react-router-dom";
 import { Link } from "react-router-dom";
 
 import { useWindowScroll } from "react-use";
@@ -16,7 +15,7 @@ type NavItem = {
     url: string;
 };
 
-const navbar: Navbar[] = [
+const navItems: NavItem[] = [
     { name: "hero", url: "/" },
     { name: "discover", url: "/discover" },
     { name: "destination", url: "/destination" },
@@ -181,9 +180,6 @@ export default function Navbar() {
                     </nav>
                 </div>
             )}
-
-            </div>
-
 
         </header>
     );
