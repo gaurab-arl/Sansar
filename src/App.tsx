@@ -9,7 +9,7 @@ import Story from "./components/Story";
 import Footer from "./components/Footer";
 import Contact from "./components/Contact";
 import { Routes, Route } from "react-router-dom";
-import Destination from "./pages/destination/DestinationsPage";
+import Destination from "./pages/destination/Destination";
 import Discover from "./pages/discover/Discoverpage";
 import Budget from "./pages/budget/BudgetPage";
 

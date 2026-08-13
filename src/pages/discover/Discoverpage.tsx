@@ -1,640 +1,573 @@
 import { useEffect, useState } from "react";
 import {
-  Globe,
-  Search,
-  ArrowRight,
-  Plus,
-  Minus,
-  LocateFixed,
-  Map as MapIcon,
-  Eye,
-  Box,
-  Share2,
-  Wallet,
+    Mountain,
+    MapPin,
+    ArrowUpRight,
+    Search,
+    Menu,
+    X,
+    Landmark,
+    Compass,
+    Clock,
+    Users,
 } from "lucide-react";
 
 /**
- * Design tokens ported 1:1 from the original discover.html Tailwind config.
- * Kept as inline style values (CSS variables) rather than Tailwind classes,
- * since arbitrary-value utilities (e.g. bg-[#101415]) aren't available
- * without a build step here — this keeps exact color/type fidelity while
- * everything else (layout, spacing, flex, grid, transitions) stays Tailwind.
+ * ────────────────────────────────────────────────────────────────────────
+ * DESIGN TOKENS — "Sansar / Nepal, Unfiltered"
+ * A Zentry-style system: near-black ground, one acid-lime signature accent,
+ * plus two subject-pulled accents lifted from the material world of the
+ * Kathmandu Valley itself — temple brick (rust) and repoussé brass (gold).
+ * Alternates dark "field" sections with a warm parchment "paper" section,
+ * mirroring Zentry's own black/off-white rhythm.
+ * ────────────────────────────────────────────────────────────────────────
  */
-const c = {
-  background: "#101415",
-  onBackground: "#e0e3e5",
-  surface: "#101415",
-  surfaceDim: "#101415",
-  surfaceBright: "#363a3b",
-  surfaceContainerLowest: "#0b0f10",
-  surfaceContainerLow: "#191c1e",
-  surfaceContainer: "#1d2022",
-  surfaceContainerHigh: "#272a2c",
-  surfaceContainerHighest: "#323537",
-  surfaceVariant: "#323537",
-  onSurface: "#e0e3e5",
-  onSurfaceVariant: "#c6c6cd",
-  outline: "#909097",
-  outlineVariant: "#45464d",
-  primary: "#bec6e1",
-  onPrimary: "#283045",
-  primaryContainer: "#121a2e",
-  onPrimaryContainer: "#7b839b",
-  primaryFixed: "#dae2fe",
-  secondary: "#76d6d5",
-  onSecondary: "#003737",
-  secondaryContainer: "#007f7f",
-  onSecondaryContainer: "#ddfffe",
-  tertiary: "#e9c400",
-  onTertiary: "#3a3000",
-  tertiaryContainer: "#c9a900",
-  onTertiaryContainer: "#4c3f00",
+const z = {
+    ink: "#0c0b09",
+    inkRaise: "#161310",
+    panel: "#1e1a14",
+    panelLine: "#3a3327",
+    paper: "#efe8d8",
+    paperInk: "#171310",
+    paperLine: "#d9cfb6",
+    lime: "#ccff33",
+    limeInk: "#12200a",
+    violet: "#7c5cff",
+    rust: "#d1502f",
+    gold: "#d8a13a",
+    mist: "#a89f8d",
+    mistDark: "#6b6252",
 };
 
-const fontDisplay = { fontFamily: "'Manrope', sans-serif" };
-const fontBody = { fontFamily: "'Hanken Grotesk', sans-serif" };
+const fontDisplay = { fontFamily: "'Anton', sans-serif" };
+const fontBody = { fontFamily: "'Space Grotesk', sans-serif" };
+const fontMono = { fontFamily: "'Space Mono', monospace" };
 
-function useGoogleFonts() {
-  useEffect(() => {
-    const id = "sansar-google-fonts";
-    if (document.getElementById(id)) return;
-    const link = document.createElement("link");
-    link.id = id;
-    link.rel = "stylesheet";
-    link.href =
-      "https://fonts.googleapis.com/css2?family=Manrope:wght@600;800&family=Hanken+Grotesk:wght@400;700&display=swap";
-    document.head.appendChild(link);
-  }, []);
+function useFonts() {
+    useEffect(() => {
+        const id = "sansar-nepal-fonts";
+        if (document.getElementById(id)) return;
+        const link = document.createElement("link");
+        link.id = id;
+        link.rel = "stylesheet";
+        link.href =
+            "https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap";
+        document.head.appendChild(link);
+    }, []);
 }
 
-const labelCaps = {
-  ...fontBody,
-  fontSize: "12px",
-  lineHeight: "16px",
-  letterSpacing: "0.1em",
-  fontWeight: 700,
+const eyebrow = {
+    ...fontMono,
+    fontSize: "11px",
+    letterSpacing: "0.22em",
+    fontWeight: 700,
 };
-const displayLg = {
-  ...fontDisplay,
-  fontSize: "48px",
-  lineHeight: "56px",
-  letterSpacing: "-0.02em",
-  fontWeight: 800,
-};
-const displayLgMobile = {
-  ...fontDisplay,
-  fontSize: "32px",
-  lineHeight: "40px",
-  letterSpacing: "-0.01em",
-  fontWeight: 800,
-};
-const bodyLg = { ...fontBody, fontSize: "18px", lineHeight: "28px", fontWeight: 400 };
-const bodyMd = { ...fontBody, fontSize: "16px", lineHeight: "24px", fontWeight: 400 };
-const headlineMd = { ...fontDisplay, fontSize: "24px", lineHeight: "32px", fontWeight: 600 };
+const h1 = { ...fontDisplay, fontSize: "clamp(52px, 10vw, 128px)", lineHeight: 0.92, letterSpacing: "-0.01em" };
+const h2 = { ...fontDisplay, fontSize: "clamp(34px, 5vw, 58px)", lineHeight: 1.02, letterSpacing: "-0.005em" };
+const h3 = { ...fontDisplay, fontSize: "26px", lineHeight: 1.1 };
+const body = { ...fontBody, fontSize: "16px", lineHeight: 1.7, fontWeight: 400 };
+const bodyLg = { ...fontBody, fontSize: "19px", lineHeight: 1.6, fontWeight: 400 };
+
+/** cut-corner "portal" clip path — the page's signature geometric motif */
+const portalClip = "polygon(28px 0,100% 0,100% calc(100% - 28px),calc(100% - 28px) 100%,0 100%,0 28px)";
+const portalClipSm = "polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)";
 
 const NAV_ITEMS = [
-  { key: "discover", label: "Discover" },
-  { key: "destinations", label: "Destinations" },
-  { key: "budget-planner", label: "Budget Planner" },
+    // { key: "discover", label: "Discover" },
+    // { key: "heritage", label: "Heritage Sites" },
+    // { key: "trending", label: "Trending" },
+    // { key: "planner", label: "Budget Planner" },
 ];
 
-const MAP_NODES = [
-  {
-    top: "30%",
-    left: "20%",
-    color: c.tertiary,
-    glow: "rgba(233,196,0,0.8)",
-    region: "North America",
-    place: "Cascadia Biome",
-    delay: "0s",
-  },
-  {
-    top: "45%",
-    right: "30%",
-    color: c.secondary,
-    glow: "rgba(118,214,213,0.8)",
-    region: "Europe",
-    place: "Alpine Network",
-    delay: "0.5s",
-  },
-  {
-    bottom: "35%",
-    right: "15%",
-    color: c.primary,
-    glow: "rgba(190,198,225,0.8)",
-    region: "Asia",
-    place: "Neo-Tokyo Hub",
-    delay: "1s",
-  },
+/** Wikimedia Commons — freely licensed (CC BY / CC BY-SA), stable Special:FilePath links */
+const WM = "https://commons.wikimedia.org/wiki/Special:FilePath/";
+const IMG = {
+    heroBasantapur: WM + "Kathmandu%20Durbar%20Square,%20Maju%20Dega%202,%20Nepal.jpg",
+    patan: WM + "Patan%20Durbar%20Square,%20Lalitpur,%20Nepal%205.jpg",
+    patanNight: WM + "Patan%20Durbar%20Square%20at%20Night.jpg",
+    bhaktapur: WM + "Bhaktapur%20Durbar%20Square%20Nepal%202024%2010.jpg",
+    boudhanath: WM + "Boudhanath%20stupa,%20Kathmandu%2001.jpg",
+    pashupatinath: WM + "Picturesque%20view%20of%20Pashupatinath%20Temple.jpg",
+    pokhara: WM + "Phewa%20lake,%20Pokhara.jpg",
+};
+
+const HERITAGE = [
+    {
+        tag: "Kathmandu · Hanuman Dhoka",
+        title: "Basantapur Durbar Square",
+        img: IMG.heroBasantapur,
+        body:
+            "The old royal seat of the Malla and Shah kings, wedged between Freak Street and the Kasthamandap crossroads. Climb the tiered plinths of the Maju Dega for a rooftop view over the square, then find the carved wooden window of the Kumari Ghar, home to Kathmandu's living goddess. Much of the square was rebuilt after the 2015 earthquake, beam by beam, reusing the original carvings wherever they survived.",
+        era: "12th – 18th century",
+        known: "Kumari Ghar & Maju Dega",
+        mapQuery: "Kathmandu+Durbar+Square,+Basantapur,+Nepal",
+    },
+    {
+        tag: "Lalitpur · City of Fine Arts",
+        title: "Patan Durbar Square",
+        img: IMG.patan,
+        body:
+            "Across the Bagmati river, Patan's square is tighter and denser than Kathmandu's — one stone-paved courtyard ringed by temples instead of a sprawl of them. The Krishna Mandir, carved entirely in stone in a South Indian shikhara style, anchors the square. Step into the old Royal Palace, now the Patan Museum, for the valley's finest collection of Newar bronze and repoussé metalwork.",
+        era: "16th – 17th century",
+        known: "Krishna Mandir & metalwork",
+        mapQuery: "Patan+Durbar+Square,+Lalitpur,+Nepal",
+    },
+    {
+        tag: "Bhaktapur · City of Devotees",
+        title: "Bhaktapur Durbar Square",
+        img: IMG.bhaktapur,
+        body:
+            "The furthest of the three from central Kathmandu, and the best preserved — cars stop at the city gates. The 55-Window Palace faces the Golden Gate, and a short walk leads to Nyatapola, Nepal's tallest pagoda, guarded by five pairs of stone figures said to each be ten times stronger than the one below it. Potters' Square, just south of the palace, still turns clay on foot-powered wheels.",
+        era: "12th – 15th century",
+        known: "Nyatapola & Potters' Square",
+        mapQuery: "Bhaktapur+Durbar+Square,+Nepal",
+    },
 ];
 
-const FEATURES = [
-  {
-    icon: Box,
-    iconColor: c.secondary,
-    iconBg: `${c.secondaryContainer}80`,
-    glow: `${c.secondary}1a`,
-    title: "Interactive Discovery",
-    body: "Experience terrain before arrival. Our proprietary 3D modeling engine renders geography and landmarks with millimeter precision.",
-    offset: "",
-  },
-  {
-    icon: Share2,
-    iconColor: c.primary,
-    iconBg: `${c.primaryContainer}80`,
-    glow: `${c.primary}1a`,
-    title: "Hybrid Intelligence",
-    body: "A synthesis of macro and micro. We aggregate global public data and fuse it with hyper-local, curated insights for unmatched context.",
-    offset: "md:-mt-8",
-  },
-  {
-    icon: Wallet,
-    iconColor: c.tertiary,
-    iconBg: `${c.tertiaryContainer}4d`,
-    glow: `${c.tertiary}1a`,
-    title: "Precision Budgeting",
-    body: "Foresee every variable. Dynamic, multi-tiered cost analysis algorithms adapt to real-time economic fluctuations.",
-    offset: "md:mt-8",
-  },
+const TRENDING = [
+    {
+        place: "Boudhanath Stupa",
+        district: "Kathmandu",
+        stat: "3.2k check-ins / mo",
+        img: IMG.boudhanath,
+    },
+    {
+        place: "Pashupatinath Temple",
+        district: "Kathmandu",
+        stat: "UNESCO listed, 1979",
+        img: IMG.pashupatinath,
+    },
+    {
+        place: "Phewa Lake, Pokhara",
+        district: "Pokhara",
+        stat: "Annapurna reflections",
+        img: IMG.pokhara,
+    },
 ];
 
-const DESTINATIONS = [
-  {
-    country: "Japan",
-    title: "Kyoto Neo-Districts",
-    stat: "14.2k Active",
-    hotspot: true,
-    offset: "",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuALwG16Cc0Os0XJKKG6tPvkhNgDBsTAKvXJ1rei2vDFsGHzoVw8pdKER6Suu2gFkQ1fNlEjT0H5hfPlIfMoibbIlw3SwICuUvYW257yUb7a2RCkAaVkft0FgaviGxnSDmdXVHjXp3-UO3DjZwB5ZKjsQgHuv52Hh_kee7D031Rdug01bqzaJQfJfD50PfPwDwWTp3GXscxw-Rc4shYVcX8GLWA8Qw15vdaRlpn0KY59GU7JACU6M95oaw",
-  },
-  {
-    country: "Puerto Rico",
-    title: "Mosquito Bay Bioluminescence",
-    stat: "8.9k Active",
-    offset: "lg:translate-y-8",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCPF9LcAR1RNlE_rXEYaObIj8YlUC8BvGMELzT3SO6yLnX9q_P4CW6KkIz4TjxNpk0L5Zm3TDlZg2Fm1oDddXHUyG9rqTLin9F0tAWKkELWcEePOE0gvyAm7mnaHtN9-nRvXvDe_xVkWGWXUOxUv2frTVWjLjDn9Ubc2xX5KHll8omkKUoJmCUIaeZkD-kk6Qt6G0xmcLHeMhwXihHk8_MukyLQTjjzZa247hG45zjnHh243_tPcGS4VQ",
-  },
-  {
-    country: "Costa Rica",
-    title: "Canopy Eco-Sanctuary",
-    stat: "11.5k Active",
-    offset: "",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDvO6949vjeVP1fG7ODBMhwxZyT5-x_71-vq_4hBUPobMQyEJit7Nva2tqPTBWpYT1GYv7uNVQuMgK4gRIiYbPbm3ZgPmGRBCr-rw9tqqXFdZroIUPUlXDtKJ_jGpwDb6i3hyoqLP1Jm2eKcXF-9bWXjPxtUGKi5bRJohY9CwigIb170NkXpibH7PuUnW0YdU9OaFJ19I0ONwFAj2KRU1Ca9kdT_u4BdBO6Xpw-YaWrUBC45q6vP5FykQ",
-  },
-];
-
-const LOGO_URL =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuAtrLF1pVSAdehfs3yTU4MzEtjdm-cuUKe-wxYMIV_ekYHZrjTtcB2vQRv7wy3GvsEdzkJ6kdvY-irPukErP2qNIXEb_5LIuTFTnqFC2zTgHOooUfq2Coh2SbZ8-JOXIZv7lZwF8ZbY8E3ZoXw6pel1ECTt_F5yx7IdM7o8_TXpDoSNLqkncUinizPJ0qSUZ_migTwVsO0iyCfwHJg1AX-I9CmI277Ry3_tim_zfreSZQQtgK94fAcxdA";
-
-const HERO_BG =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuAAIsbETRFnK7yqBKApSGz-vSuqo5TVrvIbZZwqJ_L81KHxGxQcvIHDI4-NAnD_CkhfHA7BUFwyBvFO-htS9JNOPGM4ADddW7QOgCypSWxGyEK4Hp30r3IXlAVj88xUFTnDbdQNdN00U_JeslCgHaglBKM0dFZI31JgD8EQGyw9VNomSLVoFOgWf7HJLC5vWXDV8Lk-bJmg7gKOkZpCY3SM-0xKAkc3kry26c43gO12ePCMC0PHpF9xnQ";
-
-const MAP_BG =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuC8HDM3MCd_XRmhmoUexF4Kh5a0YUN3-bx-yf95_B46Iy6Z19nwJGz6Ep_Yc3a6Ky4MWNYMX4nbG5KvAqHHoqIRhtRu8jEEfioHk6cYsN6sOhBFNUINJQVZ4BJgjweXc8hF9Aa8TtAffI8F9SDDxoHga-UP5NUDxEi1MtyAK9Px4nKdkBXsTrNX3n74oglDO6n7JqfEuZPRzRM0vZcdCwqql089IuGupyp4baHkhEdhUmz_DCHD9GlgfQ";
-
-const REYKJAVIK_BG =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuBMzPF6wc11VKuDz_-opPGgImCeOu0KJkv3elwEeQpTwwARvIpOggXQ6lfzExsqVr5ZP64Dqexps9E7xtaC8DAMiCFcesTzkpW41AGUN9edDkN2Wl78oGN4d7tvSaCGS1JcWcI5XEgD4tPGiEgGcKiGOPEweoJqMEUletg3aHK8dtfoZOg3Ke6y4IhNBQ88p64Rgx5uGHTByiD_nHzVMORdLQdSeibA88oxBuh_mPUH_-7aJc7mopTUfQ";
+function RotatingBadge() {
+    const text = "EXPLORE THE VALLEY • SCROLL DOWN • ";
+    const chars = text.split("");
+    return (
+        <div
+            className="relative w-28 h-28 shrink-0"
+            style={{ animation: "sansar-spin 14s linear infinite" }}
+        >
+            {chars.map((ch, i) => {
+                const angle = (360 / chars.length) * i;
+                return (
+                    <span
+                        key={i}
+                        className="absolute left-1/2 top-1/2 origin-[0_0]"
+                        style={{
+                            ...fontMono,
+                            fontSize: "9.5px",
+                            fontWeight: 700,
+                            color: z.limeInk,
+                            transform: `rotate(${angle}deg) translate(0,-52px)`,
+                            letterSpacing: "0.05em",
+                        }}
+                    >
+                        {ch}
+                    </span>
+                );
+            })}
+            <div
+                className="absolute inset-0 m-auto w-9 h-9 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: z.ink }}
+            >
+                <Mountain size={16} color={z.lime} />
+            </div>
+            <div className="absolute inset-0 rounded-full" style={{ backgroundColor: z.lime }} />
+            {/* text sits above the fill circle */}
+            <div className="absolute inset-0">
+                {chars.map((ch, i) => {
+                    const angle = (360 / chars.length) * i;
+                    return (
+                        <span
+                            key={i}
+                            className="absolute left-1/2 top-1/2 origin-[0_0]"
+                            style={{
+                                ...fontMono,
+                                fontSize: "9.5px",
+                                fontWeight: 700,
+                                color: z.limeInk,
+                                transform: `rotate(${angle}deg) translate(0,-52px)`,
+                                letterSpacing: "0.05em",
+                            }}
+                        >
+                            {ch}
+                        </span>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
 
 function NavLink({ item, active, onClick }) {
-  return (
-    <a
-      href="#"
-      aria-current={active ? "page" : undefined}
-      onClick={(e) => {
-        e.preventDefault();
-        onClick(item.key);
-      }}
-      style={{ ...labelCaps, color: active ? c.primary : c.onSurfaceVariant }}
-      className="uppercase transition-colors hover:opacity-90"
-    >
-      {item.label}
-    </a>
-  );
-}
-
-function MapNode({ node }) {
-  return (
-    <div
-      className="absolute group/node cursor-pointer"
-      style={{ top: node.top, left: node.left, right: node.right, bottom: node.bottom }}
-    >
-      <div className="relative w-6 h-6 flex items-center justify-center">
-        <div
-          className="absolute inset-0 rounded-full animate-ping"
-          style={{ backgroundColor: `${node.color}33`, animationDelay: node.delay }}
-        />
-        <div
-          className="w-3 h-3 rounded-full border-2"
-          style={{
-            backgroundColor: node.color,
-            borderColor: c.surface,
-            boxShadow: `0 0 15px ${node.glow}`,
-          }}
-        />
-      </div>
-      <div
-        className="absolute top-8 left-1/2 -translate-x-1/2 backdrop-blur-sm px-3 py-1.5 rounded-lg border opacity-0 group-hover/node:opacity-100 transition-opacity whitespace-nowrap shadow-xl"
-        style={{ backgroundColor: `${c.surface}e6`, borderColor: `${node.color}4d` }}
-      >
-        <span
-          style={{ ...labelCaps, fontSize: "10px", color: node.color }}
-          className="uppercase tracking-widest block mb-0.5"
+    return (
+        <a
+            href="#"
+            aria-current={active ? "page" : undefined}
+            onClick={(e) => {
+                e.preventDefault();
+                onClick(item.key);
+            }}
+            style={{ ...eyebrow, color: active ? z.lime : z.mist }}
+            className="uppercase transition-colors hover:opacity-90"
         >
-          {node.region}
-        </span>
-        <span style={bodyMd} className="text-sm" >
-          <span style={{ color: c.onSurface }}>{node.place}</span>
-        </span>
-      </div>
-    </div>
-  );
+            {item.label}
+        </a>
+    );
 }
 
-function FeatureCard({ feature }) {
-  const Icon = feature.icon;
-  return (
-    <div
-      className={`group relative rounded-2xl p-8 overflow-hidden transition-all shadow-lg flex flex-col h-full min-h-[360px] ${feature.offset}`}
-      style={{ backgroundColor: `${c.surfaceContainer}66`, backdropFilter: "blur(24px)" }}
-    >
-      <div
-        className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl -mr-10 -mt-10 transition-all"
-        style={{ backgroundColor: feature.glow }}
-      />
-      <div
-        className="w-12 h-12 rounded-full flex items-center justify-center mb-6 relative z-10 border"
-        style={{ backgroundColor: feature.iconBg, borderColor: `${feature.iconColor}33` }}
-      >
-        <Icon size={22} color={feature.iconColor} />
-      </div>
-      <h3 style={{ ...headlineMd, color: c.onSurface }} className="mb-3 relative z-10">
-        {feature.title}
-      </h3>
-      <p style={{ ...bodyMd, color: c.onSurfaceVariant }} className="mb-6 relative z-10 grow">
-        {feature.body}
-      </p>
-    </div>
-  );
+function HeritageArticle({ site, index, reverse }) {
+    const num = String(index + 1).padStart(2, "0");
+    return (
+        <article className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start py-16 border-t" style={{ borderColor: z.panelLine }}>
+            <div className={`lg:col-span-6 ${reverse ? "lg:order-2" : ""}`}>
+                <div
+                    className="relative w-full h-[360px] md:h-[440px] overflow-hidden"
+                    style={{ clipPath: portalClip, backgroundColor: z.panel }}
+                >
+                    <img src={site.img} alt={site.title} className="absolute inset-0 w-full h-full object-cover" />
+                    <div
+                        className="absolute inset-0"
+                        style={{ background: `linear-gradient(to top, ${z.ink}cc, transparent 55%)` }}
+                    />
+                    <div
+                        className="absolute bottom-5 left-5 px-3 py-1.5 flex items-center gap-2"
+                        style={{ backgroundColor: `${z.ink}cc`, clipPath: portalClipSm }}
+                    >
+                        <MapPin size={13} color={z.lime} />
+                        <span style={{ ...fontMono, fontSize: "11px", color: z.paper }}>{site.tag}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className={`lg:col-span-6 ${reverse ? "lg:order-1" : ""} flex flex-col gap-5`}>
+                <div className="flex items-center gap-4">
+                    <span style={{ ...fontDisplay, fontSize: "44px", color: z.panelLine, lineHeight: 1 }}>{num}</span>
+                    <span style={{ ...eyebrow, color: z.gold }} className="uppercase">
+                        {site.tag}
+                    </span>
+                </div>
+                <h3 style={{ ...h3, color: z.paper }}>{site.title}</h3>
+                <p style={{ ...body, color: z.mist }}>{site.body}</p>
+
+                <div className="flex flex-wrap gap-6 pt-2 pb-1">
+                    <div className="flex items-center gap-2">
+                        <Clock size={15} color={z.rust} />
+                        <span style={{ ...fontMono, fontSize: "11px", color: z.mist }}>{site.era}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Landmark size={15} color={z.rust} />
+                        <span style={{ ...fontMono, fontSize: "11px", color: z.mist }}>{site.known}</span>
+                    </div>
+                </div>
+
+                {/* Embedded location map */}
+                <div className="relative w-full h-[220px] overflow-hidden border" style={{ clipPath: portalClipSm, borderColor: z.panelLine }}>
+                    <iframe
+                        title={`Map — ${site.title}`}
+                        src={`https://www.google.com/maps?q=${site.mapQuery}&output=embed`}
+                        className="w-full h-full grayscale-[35%] contrast-[1.05]"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                    />
+                </div>
+                <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${site.mapQuery}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group inline-flex items-center gap-2 self-start"
+                    style={{ ...eyebrow, color: z.lime }}
+                >
+                    Open full map
+                    <ArrowUpRight size={13} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+            </div>
+        </article>
+    );
 }
 
-function DestinationCard({ dest }) {
-  return (
-    <div
-      className={`group relative rounded-2xl overflow-hidden h-[450px] shadow-xl cursor-pointer ${dest.offset}`}
-    >
-      <img
-        src={dest.img}
-        alt={dest.title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(to bottom, ${c.background}1a, ${c.background}66, ${c.background}f2)`,
-        }}
-      />
-      {dest.hotspot && (
-        <div
-          className="absolute top-4 right-4 backdrop-blur-md px-3 py-1.5 rounded-full border flex items-center gap-1.5 shadow-lg"
-          style={{ backgroundColor: `${c.surface}cc`, borderColor: `${c.outlineVariant}80` }}
-        >
-          <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: c.tertiary }} />
-          <span style={{ ...labelCaps, fontSize: "10px", color: c.onSurface }} className="uppercase tracking-wider">
-            Hotspot
-          </span>
+function TrendingCard({ item }) {
+    return (
+        <div className="group relative h-[380px] overflow-hidden cursor-pointer" style={{ clipPath: portalClip }}>
+            <img
+                src={item.img}
+                alt={item.place}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, ${z.ink}0d, ${z.ink}b3, ${z.ink}f2)` }} />
+            <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col gap-2">
+                <span style={{ ...eyebrow, color: z.gold }}>{item.district.toUpperCase()}</span>
+                <h4 style={{ ...fontDisplay, fontSize: "22px", color: z.paper }}>{item.place}</h4>
+                <div className="flex items-center justify-between mt-2 pt-3 border-t" style={{ borderColor: `${z.mist}33` }}>
+                    <div className="flex items-center gap-2">
+                        <Users size={13} color={z.lime} />
+                        <span style={{ ...fontMono, fontSize: "10px", color: z.mist }}>{item.stat}</span>
+                    </div>
+                    <ArrowUpRight size={15} color={z.lime} className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </div>
+            </div>
         </div>
-      )}
-      <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col gap-2">
-        <span style={{ ...labelCaps, color: c.secondary }} className="uppercase tracking-widest">
-          {dest.country}
-        </span>
-        <h3 style={{ ...headlineMd, color: c.onSurface }}>{dest.title}</h3>
-        <div
-          className="flex items-center justify-between mt-3 pt-3 border-t"
-          style={{ borderColor: `${c.outlineVariant}4d` }}
-        >
-          <div className="flex items-center gap-2 text-sm" style={{ ...bodyMd, color: `${c.onSurfaceVariant}cc` }}>
-            <Eye size={14} />
-            <span>{dest.stat}</span>
-          </div>
-          <ArrowRight
-            size={16}
-            className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
-            style={{ color: c.onSurface }}
-          />
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default function Discover() {
-  useGoogleFonts();
-  const [activePath, setActivePath] = useState("discover");
+    useFonts();
+    const [activePath, setActivePath] = useState("discover");
+    const [menuOpen, setMenuOpen] = useState(false);
 
-  return (
-    <div style={{ backgroundColor: c.background, color: c.onSurface, ...bodyMd }} className="min-h-screen w-full">
-      {/* Header */}
-      <header
-        className="fixed top-0 w-full z-50 backdrop-blur-xl"
-        style={{ backgroundColor: `${c.surface}cc`, boxShadow: "0 1px 8px rgba(0,0,0,0.1)" }}
-      >
-        <div className="h-20 w-full px-5 md:px-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <img src={LOGO_URL} alt="Sansar Logo" className="h-8 w-auto object-contain" />
-            <span style={{ ...headlineMd, color: c.onSurface }} className="tracking-tight">
-              Sansar
-            </span>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            {NAV_ITEMS.map((item) => (
-              <NavLink key={item.key} item={item} active={activePath === item.key} onClick={setActivePath} />
-            ))}
-          </nav>
-          <div className="flex items-center gap-6">
-            <Search
-              size={20}
-              className="cursor-pointer transition-colors hover:opacity-80"
-              style={{ color: c.onSurfaceVariant }}
-            />
-          </div>
-        </div>
-      </header>
+    return (
+        <div style={{ backgroundColor: z.ink, color: z.paper, ...body }} className="min-h-screen w-full overflow-x-hidden">
+            <style>{`
+        @keyframes sansar-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes sansar-pulse { 0%,100% { opacity:1 } 50% { opacity:.35 } }
+      `}</style>
 
-      <main className="w-full pt-20">
-        {/* Hero */}
-        <section className="relative w-full h-[600px] min-h-[500px] flex items-center justify-center -mt-20 pt-20 overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <div
-              className="w-full h-full bg-cover bg-center"
-              style={{ backgroundImage: `url('${HERO_BG}')` }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `linear-gradient(to bottom, ${c.background}66, ${c.background}99, ${c.background})`,
-              }}
-            />
-          </div>
-          <div className="relative z-10 w-full max-w-[1440px] px-5 md:px-16 flex flex-col items-center text-center gap-6 mt-16">
-            <h1 style={{ ...displayLg, color: c.onSurface }} className="max-w-3xl leading-tight">
-              The World, <span style={{ color: c.tertiary }}>Unveiled.</span>
-            </h1>
-            <p style={{ ...bodyLg, color: c.onSurfaceVariant }} className="max-w-2xl mb-8">
-              Navigate the unseen. Curate your next expedition with unprecedented precision and immersive geographic
-              intelligence.
-            </p>
-
-            {/* Search bar */}
-            <div className="w-full max-w-2xl relative group">
-              <div
-                className="absolute -inset-0.5 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-500"
-                style={{
-                  background: `linear-gradient(to right, ${c.secondary}80, ${c.tertiary}4d, ${c.secondary}80)`,
-                }}
-              />
-              <div
-                className="relative flex items-center backdrop-blur-md rounded-full p-2 pl-6 pr-3 shadow-2xl transition-all border"
-                style={{ backgroundColor: `${c.surfaceContainer}cc`, borderColor: `${c.outlineVariant}4d` }}
-              >
-                <Globe size={20} style={{ color: c.onSurfaceVariant }} className="mr-3 shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Search destinations, landmarks, or coordinates..."
-                  style={{ ...bodyLg, color: c.onSurface }}
-                  className="bg-transparent w-full focus:outline-none placeholder:opacity-40"
-                />
-                <button
-                  style={{
-                    background: `linear-gradient(to right, ${c.secondaryContainer}, ${c.primaryContainer})`,
-                    color: c.onSecondaryContainer,
-                    ...labelCaps,
-                  }}
-                  className="uppercase px-6 py-3 rounded-full flex items-center gap-2 transition-all shadow-lg ml-2 hover:opacity-90"
-                >
-                  <span>Explore</span>
-                  <ArrowRight size={14} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Interactive map */}
-        <section className="w-full relative z-20 pb-24">
-          <div className="w-full max-w-[1920px] mx-auto px-5 md:px-16 relative">
-            <div
-              className="w-full h-[600px] md:h-[700px] lg:h-[800px] rounded-3xl overflow-hidden relative shadow-2xl border group"
-              style={{ borderColor: `${c.outlineVariant}33`, backgroundColor: c.surfaceContainer }}
-            >
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-[10s] ease-out group-hover:scale-105"
-                style={{
-                  backgroundImage: `url('${MAP_BG}')`,
-                  filter: "grayscale(80%) sepia(20%) hue-rotate(180deg) brightness(0.6) contrast(1.2)",
-                }}
-              />
-              <div
-                className="absolute inset-0"
-                style={{ background: `linear-gradient(to top, ${c.background}e6, transparent, transparent)` }}
-              />
-
-              {/* Overlay card */}
-              <div
-                className="absolute top-8 left-8 backdrop-blur-md p-4 rounded-xl border flex flex-col gap-2 max-w-xs shadow-lg"
-                style={{ backgroundColor: `${c.surface}cc`, borderColor: `${c.outlineVariant}4d` }}
-              >
-                <span
-                  style={{ ...labelCaps, color: c.secondary }}
-                  className="uppercase tracking-widest flex items-center gap-2"
-                >
-                  <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: c.secondary }} />
-                  Global Recon
-                </span>
-                <h3 style={{ ...headlineMd, color: c.onSurface }}>Interactive Discovery</h3>
-                <p style={{ ...bodyMd, color: c.onSurfaceVariant }} className="text-sm">
-                  Pan, zoom, and select regions to access hyper-local intelligence and real-time environmental data.
-                </p>
-              </div>
-
-              {MAP_NODES.map((node, i) => (
-                <MapNode key={i} node={node} />
-              ))}
-
-              {/* Map controls */}
-              <div className="absolute bottom-8 right-8 flex flex-col gap-2">
-                {[
-                  { Icon: Plus, extra: "" },
-                  { Icon: Minus, extra: "" },
-                  { Icon: LocateFixed, extra: "mt-2" },
-                ].map(({ Icon, extra }, i) => (
-                  <button
-                    key={i}
-                    className={`w-10 h-10 backdrop-blur-md rounded-lg border flex items-center justify-center transition-colors shadow-lg hover:opacity-90 ${extra}`}
-                    style={{ backgroundColor: `${c.surface}cc`, borderColor: `${c.outlineVariant}4d`, color: c.onSurface }}
-                  >
-                    <Icon size={18} />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features */}
-        <section className="w-full max-w-[1440px] mx-auto px-5 md:px-16 py-24 relative z-20">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-            <div>
-              <span style={{ ...labelCaps, color: c.secondary }} className="uppercase tracking-widest mb-2 block">
-                System Capabilities
-              </span>
-              <h2 style={{ ...displayLg, color: c.onSurface }}>Architect Your Journey.</h2>
-            </div>
-            <p style={{ ...bodyMd, color: c.onSurfaceVariant }} className="max-w-md">
-              Beyond conventional mapping. Sansar integrates multi-layered intelligence for the discerning traveler.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {FEATURES.map((f, i) => (
-              <FeatureCard key={i} feature={f} />
-            ))}
-          </div>
-        </section>
-
-        {/* Trending destinations */}
-        <section className="w-full py-24 relative overflow-hidden" style={{ backgroundColor: c.surfaceContainerLow }}>
-          <div
-            className="absolute top-0 left-0 w-full h-px"
-            style={{
-              background: `linear-gradient(to right, transparent, ${c.outlineVariant}, transparent)`,
-            }}
-          />
-          <div className="max-w-[1440px] mx-auto px-5 md:px-16 relative z-10">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-              <div className="flex items-center gap-4">
-                <h2 style={{ ...displayLg, color: c.onSurface }}>Trending Immersions</h2>
-                <span
-                  style={{ ...labelCaps, backgroundColor: `${c.tertiary}1a`, color: c.tertiary, borderColor: `${c.tertiary}33` }}
-                  className="px-3 py-1 rounded-full border"
-                >
-                  Live Data
-                </span>
-              </div>
-              <a
-                href="#"
-                className="group flex items-center gap-2 uppercase transition-colors hover:opacity-80"
-                style={{ ...labelCaps, color: c.primary }}
-              >
-                View All Coordinates
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </a>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {DESTINATIONS.map((d, i) => (
-                <DestinationCard key={i} dest={d} />
-              ))}
-
-              {/* Map-context card */}
-              <div
-                className="group relative rounded-2xl overflow-hidden h-[450px] shadow-xl cursor-pointer lg:translate-y-8 flex flex-col p-1"
-                style={{ backgroundColor: c.surfaceContainer }}
-              >
-                <div
-                  className="w-full h-1/2 rounded-t-xl bg-cover bg-center"
-                  style={{ backgroundImage: `url('${REYKJAVIK_BG}')` }}
-                />
-                <div
-                  className="flex-1 p-6 flex flex-col justify-end rounded-b-xl relative z-10"
-                  style={{ background: `linear-gradient(to top, ${c.background}, ${c.background}cc)` }}
-                >
-                  <div
-                    className="absolute -top-6 right-6 w-12 h-12 rounded-full shadow-lg flex items-center justify-center border"
-                    style={{ backgroundColor: c.surface, borderColor: `${c.outlineVariant}4d`, color: c.secondary }}
-                  >
-                    <MapIcon size={18} />
-                  </div>
-                  <span style={{ ...labelCaps, color: c.secondary }} className="uppercase tracking-widest mb-2 block">
-                    Iceland
-                  </span>
-                  <h3 style={{ ...headlineMd, color: c.onSurface }} className="mb-2">
-                    Reykjavik Thermal Network
-                  </h3>
-                  <p style={{ ...bodyMd, color: `${c.onSurfaceVariant}cc` }} className="text-sm line-clamp-2">
-                    Map view of geothermal hotspots and optimal routing algorithms.
-                  </p>
-                  <div
-                    className="flex items-center justify-between mt-3 pt-3 border-t"
-                    style={{ borderColor: `${c.outlineVariant}4d` }}
-                  >
-                    <span style={{ ...labelCaps, fontSize: "10px", color: c.primary }} className="uppercase tracking-widest">
-                      Access Map
-                    </span>
-                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" style={{ color: c.primary }} />
-                  </div>
+            {/* Header */}
+            <header className="fixed top-0 w-full z-50 backdrop-blur-xl" style={{ backgroundColor: `${z.ink}dd`, borderBottom: `1px solid ${z.panelLine}` }}>
+                <div className="h-20 w-full px-5 md:px-16 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 flex items-center justify-center" style={{ backgroundColor: z.lime, clipPath: portalClipSm }}>
+                            <Mountain size={18} color={z.limeInk} />
+                        </div>
+                        <span style={{ ...fontDisplay, fontSize: "20px", color: z.paper }} className="tracking-tight">
+                            SANSAR
+                        </span>
+                    </div>
+                    <nav className="hidden md:flex items-center gap-8">
+                        {NAV_ITEMS.map((item) => (
+                            <NavLink key={item.key} item={item} active={activePath === item.key} onClick={setActivePath} />
+                        ))}
+                    </nav>
+                    <div className="hidden md:flex items-center gap-5">
+                        <Search size={18} className="cursor-pointer" style={{ color: z.mist }} />
+                        <button
+                            className="px-5 py-2.5 flex items-center gap-2"
+                            style={{ backgroundColor: z.lime, color: z.limeInk, clipPath: portalClipSm, ...eyebrow }}
+                        >
+                            PLAN A TRIP
+                        </button>
+                    </div>
+                    <button className="md:hidden" onClick={() => setMenuOpen((v) => !v)}>
+                        {menuOpen ? <X color={z.paper} /> : <Menu color={z.paper} />}
+                    </button>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
+                {menuOpen && (
+                    <div className="md:hidden flex flex-col gap-5 px-5 pb-6" style={{ borderTop: `1px solid ${z.panelLine}` }}>
+                        {NAV_ITEMS.map((item) => (
+                            <div key={item.key} className="pt-4">
+                                <NavLink item={item} active={activePath === item.key} onClick={setActivePath} />
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </header>
 
-      {/* Footer */}
-      <footer
-        className="w-full py-16 px-5 md:px-16 border-t"
-        style={{ backgroundColor: c.surfaceContainerLowest, borderColor: `${c.outlineVariant}1a` }}
-      >
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <img src={LOGO_URL} alt="Sansar Logo" className="h-6 w-auto opacity-70" />
-              <span style={{ ...headlineMd, fontSize: "18px", lineHeight: "28px", color: c.onSurface }}>Sansar</span>
-            </div>
-            <p style={{ ...bodyMd, color: c.onSurfaceVariant }} className="max-w-xs">
-              Discover hidden gems and orchestrate the ultimate expedition with precision and wonder.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-16">
-            <div className="flex flex-col gap-4">
-              <span style={{ ...labelCaps, color: c.onSurface }} className="uppercase">
-                Company
-              </span>
-              {["About", "Press", "Careers"].map((label) => (
-                <a
-                  key={label}
-                  href="#"
-                  style={{ ...bodyMd, color: c.onSurfaceVariant }}
-                  className="transition-colors hover:opacity-80"
+            <main className="w-full pt-20">
+                {/* HERO */}
+                <section className="relative w-full min-h-[92vh] flex items-end overflow-hidden">
+                    <div className="absolute inset-0 z-0">
+                        <img src={IMG.heroBasantapur} alt="Basantapur Durbar Square, Kathmandu" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${z.ink} 8%, ${z.ink}99 45%, ${z.ink}55 75%)` }} />
+                        <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${z.ink}b3, transparent 60%)` }} />
+                    </div>
+
+                    <div className="relative z-10 w-full max-w-[1440px] mx-auto px-5 md:px-16 pb-16 pt-40">
+                        <div className="flex flex-wrap items-center gap-3 mb-6">
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: z.lime, animation: "sansar-pulse 2s ease-in-out infinite" }} />
+                            <span style={{ ...eyebrow, color: z.lime }}>3 UNESCO DURBAR SQUARES · 1 VALLEY</span>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+                            <h1 style={{ ...h1, color: z.paper }} className="max-w-4xl">
+                                NEPAL,
+                                <br />
+                                <span style={{ color: z.lime }}>UNFILTERED.</span>
+                            </h1>
+                            <div className="flex items-center gap-6 md:mb-3">
+                                <RotatingBadge />
+                            </div>
+                        </div>
+
+                        <p style={{ ...bodyLg, color: z.mist }} className="max-w-xl mt-6">
+                            Three medieval courtyards, one Himalayan valley. Walk the brick lanes where kings once
+                            held court, then find every square on the map before you land in Kathmandu.
+                        </p>
+
+                        {/* Search bar */}
+                        <div className="w-full max-w-xl relative group mt-8">
+                            <div
+                                className="flex items-center p-1.5 pl-5 pr-1.5"
+                                style={{ backgroundColor: `${z.panel}e6`, border: `1px solid ${z.panelLine}`, clipPath: portalClipSm }}
+                            >
+                                <Compass size={18} style={{ color: z.mist }} className="mr-3 shrink-0" />
+                                <input
+                                    type="text"
+                                    placeholder="Search a temple, square, or trail…"
+                                    style={{ ...body, color: z.paper }}
+                                    className="bg-transparent w-full focus:outline-none placeholder:opacity-50 text-sm py-2"
+                                />
+                                <button
+                                    style={{ backgroundColor: z.lime, color: z.limeInk, ...eyebrow, clipPath: portalClipSm }}
+                                    className="px-5 py-2.5 flex items-center gap-2 shrink-0"
+                                >
+                                    GO
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* STAT STRIP */}
+                <section style={{ backgroundColor: z.inkRaise, borderTop: `1px solid ${z.panelLine}`, borderBottom: `1px solid ${z.panelLine}` }}>
+                    <div className="max-w-[1440px] mx-auto px-5 md:px-16 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+                        {[
+                            ["7", "UNESCO sites, Kathmandu Valley"],
+                            ["3", "royal durbar squares"],
+                            ["1979", "year the valley was listed"],
+                            ["1350m", "average elevation"],
+                        ].map(([n, l], i) => (
+                            <div key={i}>
+                                <div style={{ ...fontDisplay, fontSize: "32px", color: z.lime }}>{n}</div>
+                                <div style={{ ...fontMono, fontSize: "10.5px", color: z.mist }} className="uppercase mt-1">
+                                    {l}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* INTRO — paper section */}
+                <section style={{ backgroundColor: z.paper, color: z.paperInk }} className="w-full py-24">
+                    <div className="max-w-[1000px] mx-auto px-5 md:px-16">
+                        <span style={{ ...eyebrow, color: z.rust }}>THE KATHMANDU VALLEY</span>
+                        <h2 style={{ ...h2, color: z.paperInk }} className="mt-4 mb-8">
+                            A valley built by
+                            <br />
+                            rival kings.
+                        </h2>
+                        <p style={{ ...bodyLg, color: "#3a3327" }} className="max-w-2xl">
+                            Long before Kathmandu was a single city, it was three competing kingdoms — Kathmandu,
+                            Patan, and Bhaktapur — each racing to build the tallest pagoda and the most ornate
+                            palace courtyard. What's left is a cluster of UNESCO-listed durbar squares packed into
+                            a valley you can cross in an afternoon: carved wooden struts, a living goddess, and
+                            brick plazas that still run on temple bells instead of traffic lights.
+                        </p>
+                    </div>
+                </section>
+
+                {/* HERITAGE ARTICLES */}
+                <section id="heritage" className="w-full max-w-[1440px] mx-auto px-5 md:px-16 py-8">
+                    <div className="flex flex-col md:flex-row justify-between items-end gap-6 pb-10">
+                        <div>
+                            <span style={{ ...eyebrow, color: z.gold }}>FIELD NOTES</span>
+                            <h2 style={{ ...h2, color: z.paper }} className="mt-3">
+                                Three Courtyards,
+                                <br />
+                                One Valley.
+                            </h2>
+                        </div>
+                        <p style={{ ...body, color: z.mist }} className="max-w-sm">
+                            Basantapur, Patan, and Bhaktapur — the valley's three royal squares, each a short taxi
+                            ride from the next. Every entry below carries its own map.
+                        </p>
+                    </div>
+
+                    {HERITAGE.map((site, i) => (
+                        <HeritageArticle key={site.title} site={site} index={i} reverse={i % 2 === 1} />
+                    ))}
+                </section>
+
+                {/* TRENDING */}
+                <section id="trending" style={{ backgroundColor: z.inkRaise, borderTop: `1px solid ${z.panelLine}` }} className="w-full py-24">
+                    <div className="max-w-[1440px] mx-auto px-5 md:px-16">
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                            <div className="flex items-center gap-4">
+                                <h2 style={{ ...h2, color: z.paper }}>Also Worth The Walk</h2>
+                                <span style={{ ...eyebrow, backgroundColor: `${z.rust}22`, color: z.rust, border: `1px solid ${z.rust}55` }} className="px-3 py-1">
+                                    Trending
+                                </span>
+                            </div>
+                            <a href="#" className="group flex items-center gap-2" style={{ ...eyebrow, color: z.lime }}>
+                                VIEW ALL DESTINATIONS
+                                <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                            </a>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {TRENDING.map((item) => (
+                                <TrendingCard key={item.place} item={item} />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* CTA BAND */}
+                <section style={{ backgroundColor: z.lime, color: z.limeInk }} className="w-full py-20">
+                    <div className="max-w-[1440px] mx-auto px-5 md:px-16 flex flex-col md:flex-row items-center justify-between gap-8">
+                        <h2 style={{ ...h2, color: z.limeInk }} className="max-w-xl">
+                            Plan the rest
+                            <br />
+                            of the valley.
+                        </h2>
+                        <button
+                            className="px-8 py-4 flex items-center gap-3 shrink-0"
+                            style={{ backgroundColor: z.limeInk, color: z.lime, clipPath: portalClipSm, ...eyebrow }}
+                        >
+                            OPEN BUDGET PLANNER
+                            <ArrowUpRight size={15} />
+                        </button>
+                    </div>
+                </section>
+            </main>
+
+            {/* Footer */}
+            <footer className="w-full py-16 px-5 md:px-16" style={{ backgroundColor: z.ink, borderTop: `1px solid ${z.panelLine}` }}>
+                <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+                    <div className="space-y-4 max-w-xs">
+                        <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 flex items-center justify-center" style={{ backgroundColor: z.lime, clipPath: portalClipSm }}>
+                                <Mountain size={14} color={z.limeInk} />
+                            </div>
+                            <span style={{ ...fontDisplay, fontSize: "18px", color: z.paper }}>SANSAR</span>
+                        </div>
+                        <p style={{ ...body, color: z.mist }} className="text-sm">
+                            A field guide to Nepal's heritage valley — the squares, the stupas, and everything
+                            between the temple bells.
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-16">
+                        <div className="flex flex-col gap-4">
+                            <span style={{ ...eyebrow, color: z.paper }}>COMPANY</span>
+                            {["About", "Press", "Careers"].map((label) => (
+                                <a key={label} href="#" style={{ ...body, color: z.mist }} className="text-sm hover:opacity-80">
+                                    {label}
+                                </a>
+                            ))}
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <span style={{ ...eyebrow, color: z.paper }}>CONNECT</span>
+                            {["Instagram", "Twitter", "TikTok"].map((label) => (
+                                <a key={label} href="#" style={{ ...body, color: z.mist }} className="text-sm hover:opacity-80">
+                                    {label}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                <div
+                    className="max-w-[1440px] mx-auto mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
+                    style={{ ...fontMono, fontSize: "10px", color: z.mistDark, borderTop: `1px solid ${z.panelLine}` }}
                 >
-                  {label}
-                </a>
-              ))}
-            </div>
-            <div className="flex flex-col gap-4">
-              <span style={{ ...labelCaps, color: c.onSurface }} className="uppercase">
-                Connect
-              </span>
-              {["Instagram", "Twitter", "TikTok"].map((label) => (
-                <a
-                  key={label}
-                  href="#"
-                  style={{ ...bodyMd, color: c.onSurfaceVariant }}
-                  className="transition-colors hover:opacity-80"
-                >
-                  {label}
-                </a>
-              ))}
-            </div>
-          </div>
+                    <span>© 2026 SANSAR — BUILT FOR THE NEPAL TOURISM HACKATHON.</span>
+                    <span>MAP DATA © GOOGLE · PHOTOS VIA WIKIMEDIA COMMONS (CC BY / CC BY-SA)</span>
+                </div>
+            </footer>
         </div>
-        <div
-          className="max-w-[1440px] mx-auto mt-16 pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 uppercase"
-          style={{ ...labelCaps, fontSize: "10px", color: c.onSurfaceVariant, borderColor: `${c.outlineVariant}33` }}
-        >
-          <span>© 2024 Sansar Expeditions.</span>
-          <span>All Rights Reserved.</span>
-        </div>
-      </footer>
-    </div>
-  );
+    );
 }
