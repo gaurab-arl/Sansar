@@ -1,128 +1,180 @@
-
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Button from "./Button";
-import { TiLocationArrow } from "react-icons/ti";
-import { Link } from "react-router-dom";
-
 import { useWindowScroll } from "react-use";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-type Navbar = {
+type NavItem = {
     name: string;
     url: string;
 };
 
-const navbar: Navbar[] = [
-    { name: "hero", url: "/" },
-    { name: "discover", url: "/discover" },
-    { name: "destination", url: "/destination" },
-    { name: "budget", url: "/budget" },
-]
+const navItems: NavItem[] = [
+    { name: "Home", url: "#hero" },
+    { name: "Destinations", url: "#destinations" },
+    { name: "Experiences", url: "#experiences" },
+    { name: "Budget", url: "#budget" },
+];
 
 export default function Navbar() {
-
-    const navLinkRef = useRef<HTMLElement | null>(null);
-    const audioplayRef = useRef<HTMLAudioElement | null>(null);
-
-    const [audioplay, setAudioplay] = useState(false);
-
+    const navRef = useRef<HTMLElement | null>(null);
+    const [isNavVisible, setNavVisible] = useState(true);
+    const [isScrolled, setIsScrolled] = useState(false);
     const lastScrollY = useRef(0);
-    const [isNavVisible, setnavvissble] = useState(true);
-
-    useEffect(() => {
-        if (audioplay) {
-            audioplayRef.current?.play();
-        } else {
-            audioplayRef.current?.pause();
-        }
-    }, [audioplay]);
-
     const { y: currentScrollY } = useWindowScroll();
-    useEffect(() => {
 
+    useEffect(() => {
         if (currentScrollY === 0) {
-            setnavvissble(true)
-            navLinkRef.current?.classList.remove('floating-nav')
-        }
-        else if (currentScrollY > lastScrollY.current) {
-            setnavvissble(false)
-            navLinkRef.current?.classList?.add('floating-nav')
+            setNavVisible(true);
+            setIsScrolled(false);
+            navRef.current?.classList.remove('floating-nav');
+        } else if (currentScrollY > lastScrollY.current) {
+            setNavVisible(false);
+            setIsScrolled(true);
+            navRef.current?.classList.add('floating-nav');
         } else {
-            setnavvissble(true)
-            navLinkRef.current?.classList.remove('floating-nav')
+            setNavVisible(true);
+            setIsScrolled(true);
+            navRef.current?.classList.remove('floating-nav');
         }
-        lastScrollY.current = currentScrollY
-    }, [currentScrollY])
+        lastScrollY.current = currentScrollY;
+    }, [currentScrollY]);
 
     useEffect(() => {
-        gsap.to(navLinkRef.current, {
+        gsap.to(navRef.current, {
             y: isNavVisible ? 0 : -100,
             opacity: isNavVisible ? 1 : 0,
-            ease: "power1.inout",
-            duration: 0.2
-        })
-    }, [isNavVisible])
+            ease: "power1.inOut",
+            duration: 0.4
+        });
+    }, [isNavVisible]);
 
-    const audioplayer = () => {
-        setAudioplay(prev => !prev);
-    }
-
-
+    const [menuOpen, setMenuOpen] = useState(false);
 
     return (
         <header
-            className={` fixed rounded-md inset-x-0 top-4 z-50 h-16 flex flex-row items-center justify-between border-none transition-all duration-700 sm:inset-x-6`}
-            ref={navLinkRef}>
-
-            <div className="text-white flex-center h-15 special-font">
-                <img src="/img/logo.png" alt="logo" className="h-full w-28" />
-                <Button
-                    id="product-button"
-                    title="Blog"
-                    rightIcon={<TiLocationArrow />}
-                    containerClass="bg-[#F5F3FF] cursor-pointer items-center justify-center gap-1"
-                />
+            ref={navRef}
+            className={`fixed inset-x-0 top-6 z-50 mx-auto flex h-14 max-w-6xl items-center justify-between rounded-full px-8 transition-all duration-700 sm:inset-x-8 ${
+                isScrolled 
+                    ? "bg-white/90 backdrop-blur-xl shadow-lg shadow-black/5 border border-white/20" 
+                    : "bg-white/10 backdrop-blur-sm border border-white/10"
+            }`}
+        >
+            {/* Logo - Updated with संसार */}
+            <div className="flex items-center gap-3">
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke={isScrolled ? "#2b5a44" : "#ffffff"} 
+                    strokeWidth="1.8" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className="transition-colors duration-500"
+                >
+                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                </svg>
+                <div className="flex flex-col leading-none">
+                    <span 
+                        className={`font-cormorant text-lg font-medium tracking-wide transition-colors duration-500 ${
+                            isScrolled ? "text-[#1f3a2e]" : "text-white/95"
+                        }`}
+                    >
+                        संसार
+                    </span>
+                    <span 
+                        className={`font-jost text-[8px] font-light tracking-[0.2em] uppercase transition-colors duration-500 ${
+                            isScrolled ? "text-[#1f3a2e]/60" : "text-white/50"
+                        }`}
+                    >
+                        Explore Nepal
+                    </span>
+                </div>
             </div>
 
-            <div className="flex-center gap-5 text-white hidden md:flex">
-                {navbar.map((item, index) => (
-                    <Link
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-8">
+                {navItems.map((item) => (
+                    <a
                         key={item.name}
-                        to={item.url}
-                        className="nav-hover-btn text-white"
+                        href={item.url}
+                        className={`font-jost text-sm font-light transition-colors duration-300 relative group py-1 ${
+                            isScrolled ? "text-[#1f3a2e]/70 hover:text-[#1f3a2e]" : "text-white/70 hover:text-white"
+                        }`}
                     >
                         {item.name}
-                    </Link>
+                        <span className={`absolute bottom-0 left-0 h-[1.5px] w-0 transition-all duration-300 group-hover:w-full ${
+                            isScrolled ? "bg-[#2b5a44]" : "bg-white/60"
+                        }`} />
+                    </a>
                 ))}
-
-
-                <button
-                    onClick={audioplayer}
-                    className="bg-black w-10 h-10 flex-center rounded-full gap-1"
+                <a
+                    href="#budget"
+                    className={`rounded-full px-6 py-2 font-jost text-sm font-medium transition-all duration-300 ${
+                        isScrolled 
+                            ? "bg-[#c47a4a] text-white hover:bg-[#b06a3e] shadow-md" 
+                            : "bg-white/15 text-white hover:bg-white/25 border border-white/20 backdrop-blur-sm"
+                    }`}
                 >
-                    <audio
-                        ref={audioplayRef}
-                        className="hidden"
-                        src="/audio/loop.mp3"
-                        loop
-                    />
+                    Plan Your Trip
+                </a>
+            </nav>
 
-                    {[...Array(4)].map((_, index) => (
-                        <span
-                            key={index}
-                            className={`w-1 h-3 bg-white rounded-full ${audioplay ? "animate-bar" : ""
+            {/* Mobile Menu Button */}
+            <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className={`md:hidden transition-colors duration-300 ${
+                    isScrolled ? "text-[#1f3a2e]" : "text-white/80 hover:text-white"
+                }`}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+
+            {/* Mobile Menu */}
+            {menuOpen && (
+                <div className={`absolute left-4 right-4 top-[72px] rounded-2xl px-6 py-8 shadow-2xl backdrop-blur-xl md:hidden ${
+                    isScrolled 
+                        ? "bg-white/98 border border-white/20" 
+                        : "bg-[#1f3a2e]/95 border border-white/10"
+                }`}>
+                    <nav className="flex flex-col gap-3">
+                        {navItems.map((item) => (
+                            <a
+                                key={item.name}
+                                href={item.url}
+                                className={`font-jost text-base font-light transition-colors duration-300 ${
+                                    isScrolled 
+                                        ? "text-[#1f3a2e] hover:text-[#c47a4a]" 
+                                        : "text-white/80 hover:text-white"
                                 }`}
-                            style={{
-                                animationDelay: `${index * 0.1}s`,
-                            }}
-                        />
-                    ))}
-                </button>
-            </div>
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                {item.name}
+                            </a>
+                        ))}
+                        <a
+                            href="#budget"
+                            className={`mt-2 rounded-full px-6 py-3 text-center font-jost text-sm font-medium transition-all duration-300 ${
+                                isScrolled 
+                                    ? "bg-[#c47a4a] text-white hover:bg-[#b06a3e]" 
+                                    : "bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
+                            }`}
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            Plan Your Trip
+                        </a>
+                    </nav>
+                </div>
+            )}
         </header>
-    )
+    );
 }

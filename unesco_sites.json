@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Kathmandu Durbar Square",
+    "category": "Cultural",
+    "description": "Ancient royal palace complex with exquisite Newari architecture, built in the 15th century.",
+    "regular_fee": "NPR 1,000",
+    "saarc_fee": "NPR 150",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Kathmandu_Durbar_Square_2022.jpg",
+    "fallback_image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Kathmandu_Durbar_Square_2022.jpg"
+  },
+  {
+    "name": "Patan Durbar Square",
+    "category": "Cultural",
+    "description": "One of the oldest Buddhist cities with 130 Bahals and 55 major temples.",
+    "regular_fee": "NPR 1,000",
+    "saarc_fee": "NPR 250",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Patan_durbar_square.jpg",
+    "fallback_image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Patan_durbar_square.jpg"
+  },
+  {
+    "name": "Bhaktapur Durbar Square",
+    "category": "Cultural",
+    "description": "Home to the famous 55-window palace and untouched Western influences.",
+    "regular_fee": "NPR 1,500",
+    "saarc_fee": "NPR 500",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Bhaktapur_Durbar_Square_2022.jpg",
+    "fallback_image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Bhaktapur_Durbar_Square_2022.jpg"
+  },
+  {
+    "name": "Pashupatinath Temple",
+    "category": "Cultural",
+    "description": "The holiest Hindu temple dedicated to Lord Shiva on the Bagmati river.",
+    "regular_fee": "NPR 1,000",
+    "saarc_fee": "NPR 1,000",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Pashupatinath_Temple_2022.jpg",
+    "fallback_image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Pashupatinath_Temple_2022.jpg"
+  },
+  {
+    "name": "Changu Narayan Temple",
+    "category": "Cultural",
+    "description": "The oldest temple in Nepal with inscriptions dating back to 365 A.D.",
+    "regular_fee": "NPR 300",
+    "saarc_fee": "NPR 100",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Changunarayan_Temple,_Bhaktapur.JPG",
+    "fallback_image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Changunarayan_Temple,_Bhaktapur.JPG"
+  },
+  {
+    "name": "Swayambhunath Stupa",
+    "category": "Cultural",
+    "description": "The ancient 'Monkey Temple' offering panoramic views of Kathmandu Valley.",
+    "regular_fee": "NPR 200",
+    "saarc_fee": "NPR 50",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Swayambhunath_Stupa_2022.jpg",
+    "fallback_image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Swayambhunath_Stupa_2022.jpg"
+  },
+  {
+    "name": "Boudhanath Stupa",
+    "category": "Cultural",
+    "description": "One of the largest stupas in the world, built in the 5th century.",
+    "regular_fee": "NPR 400",
+    "saarc_fee": "NPR 100",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Boudhanath_Stupa_2022.jpg",
+    "fallback_image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Boudhanath_Stupa_2022.jpg"
+  },
+  {
+    "name": "Lumbini",
+    "category": "Cultural",
+    "description": "The sacred birthplace of Lord Gautam Buddha, a pilgrimage destination.",
+    "regular_fee": "NPR 300",
+    "saarc_fee": "NPR 100",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Mayadevi_Temple_Lumbini_front_view.jpg",
+    "fallback_image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Mayadevi_Temple_Lumbini_front_view.jpg"
+  },
+  {
+    "name": "Chitwan National Park",
+    "category": "Natural",
+    "description": "Home to the One-Horned Rhinoceros and Bengal Tigers with 700+ wildlife species.",
+    "regular_fee": "NPR 1,500",
+    "saarc_fee": "NPR 750",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Indian_Rhinoceros_at_Chitwan_National_Park.jpg",
+    "fallback_image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Indian_Rhinoceros_at_Chitwan_National_Park.jpg"
+  },
+  {
+    "name": "Sagarmatha National Park",
+    "category": "Natural",
+    "description": "Home to Mount Everest and endangered species like Snow Leopard and Red Panda.",
+    "regular_fee": "NPR 3,000",
+    "saarc_fee": "NPR 1,500",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Everest_kalapatthar.jpg",
+    "fallback_image": "https://commons.wikimedia.org/wiki/Special:FilePath/File:Everest_kalapatthar.jpg"
+  }
+]

@@ -1,186 +1,230 @@
-
-
 import { useEffect, useRef, useState } from "react";
-import Button from "./Button";
-import { TiLocationArrow } from "react-icons/ti";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-
-
 export default function Hero() {
-    const [currentIndex, setCurrentIndex] = useState(1)
-    const [hasclicked, setHasClicked] = useState(false)
-    const [isloading, setLoading] = useState(true)
-    const [loadVideo, setLoadVideo] = useState<number>(0)
+    const heroRef = useRef<HTMLDivElement>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const totalvideo = 4;
-    const nextVdieo = useRef<HTMLVideoElement>(null)
-
-    const bgVideoRef = useRef<HTMLVideoElement>(null);
-    const miniRef = useRef<HTMLDivElement>(null);
-
-
-    const handleVideoLoad = () => {
-        setLoadVideo(prev => prev + 1);
-    }
-
-    const handelMiniVideoPlayer = () => {
-        setHasClicked(true)
-        setCurrentIndex(currentIndex => {
-            if (currentIndex === totalvideo) {
-                return 1;
+    useGSAP(() => {
+        // Hero content fade animation on scroll - LESS aggressive
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: heroRef.current,
+                start: "top top",
+                end: "bottom top",
+                scrub: 1,
             }
-            return currentIndex + 1;
-        })
-    }
-
-    const getvideo = (index: number) => {
-        return `videos/hero-${index}.mp4`;
-    }
-
-
-    useGSAP(() => {
-        if (!hasclicked) return;
-
-        gsap.set("#next-video", {
-            visibility: "visible",
         });
 
-        gsap.to("#next-video", {
-            scale: 1,
-            width: "100%",
-            height: "100%",
+        tl.to(".hero-content", {
+            opacity: 0.5,
+            y: -40,
             duration: 1,
-            ease: "power1.inOut",
-            onStart: () => nextVdieo.current?.play(),
+            ease: "power2.out",
         });
 
-        gsap.from("#current-video", {
-            scale: 0,
-            duration: 1.5,
-            ease: "power1.inOut",
-        });
-    }, {
-        dependencies: [currentIndex, hasclicked],
-        revertOnUpdate: true,
-    });
-
-    useGSAP(() => {
-        gsap.set('#video-frame', {
-            clipPath: "polygon(14% 0, 72% 0, 88% 90%, 0 95%)",
-            borderRadius: '0 0 40% 10%',
-        })
-
-        gsap.from('#video-frame', {
+        // Video frame reveal animation
+        gsap.from("#video-frame", {
             clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-            borderRadius: "0% 0% 0% 0%",
-            ease: 'power1.inout',
+            borderRadius: "0%",
+            duration: 2,
+            ease: "power2.out",
             scrollTrigger: {
                 trigger: "#video-frame",
-                start: "center center",
+                start: "top top",
                 end: "bottom center",
-                scrub: true,
+                scrub: 1,
             }
-        })
-    })
+        });
+    }, []);
 
     useEffect(() => {
-        if (loadVideo >= 2) {
-            setLoading(false);
+        if (videoRef.current) {
+            videoRef.current.addEventListener('loadeddata', () => {
+                setIsLoading(false);
+            });
+            
+            // Force hardware acceleration for smooth playback
+            videoRef.current.style.transform = 'translateZ(0)';
+            videoRef.current.style.backfaceVisibility = 'hidden';
         }
-    }, [loadVideo])
+    }, []);
 
     return (
-        <div id="hero" className="relative h-[100vh] w-full overflow-hidden">
-
-            {isloading && (
-                <div className="flex-center absolute z-[100] h-dvh w-screen overflow-x-hidden bg-violet-50">
-                    <div className="three-body">
-                        <div className="three-body__dot"></div>
-                        <div className="three-body__dot"></div>
-                        <div className="three-body__dot"></div>
-
+        <section id="hero" ref={heroRef} className="relative min-h-screen w-full overflow-hidden bg-[#050806]">
+            {/* Loading Spinner */}
+            {isLoading && (
+                <div className="absolute inset-0 z-[100] flex items-center justify-center bg-[#050806]">
+                    <div className="flex gap-2">
+                        <div className="h-3 w-3 animate-bounce rounded-full bg-[#c47a4a] [animation-delay:-0.3s]" />
+                        <div className="h-3 w-3 animate-bounce rounded-full bg-[#c47a4a] [animation-delay:-0.15s]" />
+                        <div className="h-3 w-3 animate-bounce rounded-full bg-[#c47a4a]" />
                     </div>
                 </div>
             )}
 
-            <div id="video-frame" className="relative z-10 h-full w-screen overflow-hidden rounded-lg bg-blue-75">
-                <div className="mask-clip-path absolute-center absolute z-50 h-52 w-36 md:h-64 md:w-44 overflow-hidden rounded-2xl cursor-pointer hover:scale-100 scale-50transition-all duration-1000 opacity-0 hover:opacity-100 z-40">
-                    <div
-                        onClick={handelMiniVideoPlayer}
-                        className="group relative h-full w-full overflow-hidden rounded-2xl"
-                    >
-                        <video
-                            className="absolute-center absolute z-20 top-1/2 left-1/2 lg:top-2/3 -translate-x-1/2 -translate-y-1/2 size-64 object-cover object-center"
-                            ref={nextVdieo}
-                            autoPlay
-                            loop
-                            muted
-                            id="current-video"
-                            src={getvideo((currentIndex % totalvideo) + 1)}
-                            onLoadedData={handleVideoLoad}
-                        />
-                    </div>
-                </div>
-                <div >
-                    <video
-                        ref={bgVideoRef}
-                        src={getvideo(currentIndex)}
-                        loop
-                        muted
-                        id="next-video"
-                        className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
-                        onLoadedData={handleVideoLoad}
+            <div id="video-frame" className="relative h-screen w-full overflow-hidden">
+                {/* Video Background - Enhanced Vibrancy */}
+                <video
+                    ref={videoRef}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="absolute inset-0 h-full w-full object-cover"
+                    style={{
+                        filter: "contrast(1.1) saturate(1.2) brightness(1.05)",
+                        transform: "translateZ(0)",
+                        backfaceVisibility: "hidden",
+                    }}
+                >
+                    <source src="/videos/video.mp4" type="video/mp4" />
+                    <img 
+                        src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1600&h=900&fit=crop&crop=center" 
+                        alt="Nepal Himalayas" 
+                        className="absolute inset-0 h-full w-full object-cover"
                     />
-                    <video
-                        src={getvideo(
-                            currentIndex === totalvideo - 1 ? 1 : currentIndex
-                        )}
-                        autoPlay
-                        loop
-                        muted
-                        className="absolute left-0 top-0 size-full object-cover object-center"
-                        onLoadedData={handleVideoLoad}
-                    />
-                </div>
-                <div className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75">
-                    <b>Gaming</b>
+                </video>
+
+                {/* Minimal Overlay - Lighter for video visibility */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[#050806]/30 via-[#050806]/10 to-[#050806]/60 z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#050806]/30 via-transparent to-transparent z-10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050806]/50 via-transparent to-transparent z-10" />
+
+                {/* HDR Glow Effect */}
+                <div className="absolute inset-0 z-10 pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#c47a4a]/8 via-transparent to-[#ffd700]/5 mix-blend-overlay" />
+                    <div className="absolute inset-0 bg-gradient-to-bl from-[#2b5a44]/5 via-transparent to-[#c47a4a]/5 mix-blend-overlay" />
                 </div>
 
-                <div className="absolute left-0 md:top-0 top-20  z-40 size-full">
-                    <div className="mt-24 px-5 sm:px-10">
-                        <div className="special-font text-blue-100">
-                            <b className="hero-heading text-blue-100">Welcome Home</b>
-                            <p className="mb-5 max-w-104 font-robert-regular text-blue-100">Enter the Metagame Layer <br /> Unlease the Play Economy</p>
+                {/* Floating Particles - Reduced count for cleaner look */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+                    {[...Array(15)].map((_, i) => {
+                        const size = 3 + Math.random() * 12;
+                        const left = Math.random() * 100;
+                        const delay = Math.random() * 10;
+                        const duration = 20 + Math.random() * 15;
+                        const colors = [
+                            'rgba(255,230,200,0.15)',
+                            'rgba(200,220,255,0.1)',
+                            'rgba(255,200,160,0.15)',
+                        ];
+                        const color = colors[Math.floor(Math.random() * colors.length)];
+                        const isRound = Math.random() > 0.4;
+                        
+                        return (
+                            <div
+                                key={i}
+                                className="particle absolute"
+                                style={{
+                                    left: `${left}%`,
+                                    top: `${Math.random() * 100}%`,
+                                    width: `${size}px`,
+                                    height: `${isRound ? size : size * 1.5}px`,
+                                    background: color,
+                                    borderRadius: isRound ? '50%' : '30% 70% 50% 50%',
+                                    opacity: 0.08 + Math.random() * 0.15,
+                                    filter: `blur(${0.5 + Math.random() * 1.5}px)`,
+                                    animation: `floatPetal ${duration}s ${delay}s infinite cubic-bezier(0.45, 0, 0.55, 1)`,
+                                    boxShadow: `0 0 20px ${color}`,
+                                }}
+                            />
+                        );
+                    })}
+                </div>
+
+                {/* Hero Content - More transparent and positioned better */}
+                <div className="hero-content relative z-20 flex h-full flex-col justify-center px-6 md:px-16 lg:px-24">
+                    <div className="max-w-2xl">
+                        <p className="font-jost text-[10px] font-semibold uppercase tracking-[0.3em] text-white/60 animate-fadeIn">
+                            DISCOVER NEPAL
+                        </p>
+                        <h1 className="font-cormorant text-[clamp(2.8rem,7vw,5rem)] font-light italic leading-[1.05] text-white hero-title animate-fadeInUp">
+                            Where the Himalayas<br/>
+                            <span className="not-italic font-light text-[0.85em] tracking-wide text-white/80">
+                                touch the sacred sky.
+                            </span>
+                        </h1>
+                        <p className="mt-4 max-w-lg font-jost text-sm font-light leading-relaxed text-white/70 md:text-base animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+                            Immerse in timeless ancient alleys, misty alpine valleys, and the breathtaking roof of the world.
+                        </p>
+                        <div className="mt-8 flex flex-wrap gap-4 animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
+                            <a
+                                href="#destinations"
+                                className="rounded-none bg-[#c47a4a] px-8 py-3.5 font-jost text-sm font-medium text-white transition-all duration-300 hover:bg-[#b06a3e] hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-[#c47a4a]/25"
+                            >
+                                Explore Destinations
+                            </a>
+                            <a
+                                href="#gallery"
+                                className="rounded-none border border-white/20 bg-white/5 px-7 py-3.5 font-jost text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/15 hover:-translate-y-0.5"
+                            >
+                                View Gallery
+                            </a>
                         </div>
-                        <Button id="watch-trailer"
-                            title="watch-traiiler"
-                            leftIcon={<TiLocationArrow />}
-                            containerClass="!bg-yellow-50 flex-center gap-1">
-                        </Button>
                     </div>
+                </div>
+
+                {/* Scroll Indicator - More subtle */}
+                <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-1.5 text-white/20 animate-bounce">
+                    <span className="font-jost text-[8px] font-light uppercase tracking-[0.2em]">Scroll</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M12 5v14M5 12l7 7 7-7"/>
+                    </svg>
                 </div>
             </div>
 
-            {/* <div className="absolute left-0 top-0  size-full text-black">
-                <div className="mt-24 px-5 sm:px-10">
-                    <div className="special-font text-black">
-                        <b className="hero-heading text-black">Welcome Home</b>
-                        <p className="mb-5 max-w-104 font-robert-regular text-black">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore autem vel odit voluptatem officia voluptas doloremque eaque. Dolorem amet voluptates ullam veritatis! Est, molestias ullam. Libero tenetur nesciunt officiis dolorem.</p>
-                    </div>
-                    <Button id="watch-trailer" title="watch-traiiler" leftIcon={<TiLocationArrow />} containerClass="!bg-yellow-300 flex-center gap-1"> </Button>
-                </div>
-            </div> */}
-
-            <h1 className="special-font hero-heading absolute bottom-5 right-5 text-black">
-                <b>gaming</b>
-            </h1>
-        </div>
-
+            <style>{`
+                @keyframes floatPetal {
+                    0% { 
+                        transform: translateY(0) rotate(0deg) scale(0.6); 
+                        opacity: 0; 
+                    }
+                    20% { opacity: 0.5; }
+                    80% { opacity: 0.3; }
+                    100% { 
+                        transform: translateY(110vh) rotate(${360 + Math.random() * 540}deg) scale(1.2); 
+                        opacity: 0; 
+                    }
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(8px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes bounce {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(5px); }
+                }
+                
+                .animate-fadeIn {
+                    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                }
+                
+                .animate-fadeInUp {
+                    opacity: 0;
+                    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                }
+                
+                .animate-bounce {
+                    animation: bounce 2.5s ease-in-out infinite;
+                }
+                
+                .hero-title {
+                    text-shadow: 0 2px 30px rgba(0,0,0,0.4);
+                }
+            `}</style>
+        </section>
     );
 }
