@@ -11,7 +11,7 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 
 import Destination from "./pages/destination/Destination";
-import Discover from "./pages/discover/as";
+import Discover from "./pages/discover/Discovers";
 import BudgetPlanner from "./pages/BudgetPlanner1";
 
 interface LenisOptions {

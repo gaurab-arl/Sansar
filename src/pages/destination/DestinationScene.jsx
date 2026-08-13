@@ -1,6 +1,6 @@
 import { Suspense, useMemo } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Html, useGLTF } from "@react-three/drei";
+import { ContactShadows, Environment, Html, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
 import Hotspot from "./Hotspot";
@@ -13,7 +13,25 @@ function PlaceModel({ url }) {
     const { scene } = useGLTF(url);
 
     const clonedScene = useMemo(() => {
-        return scene.clone(true);
+        const clone = scene.clone(true);
+        const box = new THREE.Box3().setFromObject(clone);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxAxis = Math.max(size.x, size.y, size.z);
+        const fitScale = maxAxis > 0 ? 1.65 / maxAxis : 1;
+
+        clone.position.sub(center);
+        clone.position.y += size.y / 2;
+        clone.scale.setScalar(fitScale);
+
+        clone.traverse((object) => {
+            if (object.isMesh) {
+                object.castShadow = true;
+                object.receiveShadow = true;
+            }
+        });
+
+        return clone;
     }, [scene]);
 
     return (
@@ -45,7 +63,7 @@ function CameraController({
     const targetLookAt = useMemo(() => new THREE.Vector3(), []);
     const interpolatedLookAt = useMemo(() => new THREE.Vector3(), []);
 
-    useFrame(() => {
+    useFrame((_, delta) => {
         if (!cameraPath || cameraPath.length < 2) {
             return;
         }
@@ -139,20 +157,7 @@ export default function DestinationScene({
     selectedHotspot,
 }) {
     const model = destination.model;
-
-    /*
-      IMPORTANT:
-  
-      Your GLB is currently rendering very small.
-  
-      Start with 5.
-  
-      4 = slightly larger
-      5 = recommended
-      6 = large
-      7 = very large
-    */
-    const MODEL_SCALE = 5;
+    const MODEL_SCALE = model.scale ?? 5;
 
     return (
         <Canvas
@@ -175,7 +180,9 @@ export default function DestinationScene({
             gl={{
                 antialias: true,
                 alpha: true,
+                preserveDrawingBuffer: true,
             }}
+            shadows
         >
             {/* =================================================
           LIGHTING
@@ -230,14 +237,27 @@ export default function DestinationScene({
                         <Hotspot
                             key={hotspot.id}
                             hotspot={hotspot}
+                            isActive={selectedHotspot?.id === hotspot.id}
                             onSelect={onSelectHotspot}
                         />
                     ))}
                 </Suspense>
             </group>
+
+            <ContactShadows
+                position={[0, -0.02, 0]}
+                opacity={0.28}
+                scale={14}
+                blur={2.4}
+                far={8}
+            />
+
+            <Environment preset="sunset" />
         </Canvas>
     );
 }
 
 useGLTF.preload("/models/basantapur.glb");
+useGLTF.preload("/models/baktapur.glb");
+useGLTF.preload("/models/ktm.glb");
 useGLTF.preload("/models/patan.glb");

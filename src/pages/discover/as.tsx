@@ -296,6 +296,10 @@ function TrendingCard({ item }) {
     );
 }
 
+function shouldRenderFooter() {
+    return false;
+}
+
 export default function Discover() {
     useFonts();
     const [activePath, setActivePath] = useState("discover");
@@ -447,27 +451,10 @@ export default function Discover() {
                         </div>
                     </div>
                 </section>
-
-                {/* CTA BAND */}
-                <section style={{ backgroundColor: z.lime, color: z.limeInk }} className="w-full py-20">
-                    <div className="max-w-[1440px] mx-auto px-5 md:px-16 flex flex-col md:flex-row items-center justify-between gap-8">
-                        <h2 style={{ ...h2, color: z.limeInk }} className="max-w-xl">
-                            Plan the rest
-                            <br />
-                            of the valley.
-                        </h2>
-                        <button
-                            className="px-8 py-4 flex items-center gap-3 shrink-0"
-                            style={{ backgroundColor: z.limeInk, color: z.lime, clipPath: portalClipSm, ...eyebrow }}
-                        >
-                            OPEN BUDGET PLANNER
-                            <ArrowUpRight size={15} />
-                        </button>
-                    </div>
-                </section>
             </main>
 
-            {/* Footer */}
+            {/* Footer removed */}
+            {shouldRenderFooter() && (
             <footer className="w-full py-16 px-5 md:px-16" style={{ backgroundColor: z.ink, borderTop: `1px solid ${z.panelLine}` }}>
                 <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
                     <div className="space-y-4 max-w-xs">
@@ -509,6 +496,7 @@ export default function Discover() {
                     <span>MAP DATA © GOOGLE · PHOTOS VIA WIKIMEDIA COMMONS (CC BY / CC BY-SA)</span>
                 </div>
             </footer>
+            )}
         </div>
     );
 }

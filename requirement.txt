@@ -1,0 +1,13 @@
+
+      npm install
+
+
+      npm install react react-dom
+      npm install react-router-dom
+      npm install gsap @gsap/react
+      npm install lenis @studio-freight/lenis
+      npm install tailwindcss @tailwindcss/vite
+
+
+      npm run dev
+
