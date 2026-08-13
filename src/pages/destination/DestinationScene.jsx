@@ -83,8 +83,9 @@ function CameraController({
         }
 
         // 3. Smoothly animate the camera towards the final targets
-        camera.position.lerp(targetPosition, 0.05);
-        interpolatedLookAt.lerp(targetLookAt, 0.05);
+        const smoothStep = 1 - Math.exp(-8 * delta);
+        camera.position.lerp(targetPosition, smoothStep);
+        interpolatedLookAt.lerp(targetLookAt, smoothStep);
         
         camera.lookAt(interpolatedLookAt);
     });
@@ -239,3 +240,4 @@ export default function DestinationScene({
 }
 
 useGLTF.preload("/models/basantapur.glb");
+useGLTF.preload("/models/patan.glb");

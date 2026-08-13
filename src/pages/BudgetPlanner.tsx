@@ -97,6 +97,64 @@ const formatCurrency = (amount: number, currency: Currency = 'USD'): string => {
   })}`;
 };
 
+// A price of 0/undefined/NaN means the data source has no real price for
+// this item (not that it's actually free), so never render a bare "$0.00".
+const formatPriceOrUnavailable = (amount: number | null | undefined, currency: Currency = 'USD'): string => {
+  if (amount === null || amount === undefined || Number.isNaN(amount) || amount <= 0) {
+    return 'Price unavailable';
+  }
+  return formatCurrency(amount, currency);
+};
+
+// Builds an itinerary that always has exactly `days` entries, numbered
+// Day 1..N with no gaps or duplicates. If there are fewer sample days than
+// requested, the sample content cycles; if there are more, it's trimmed.
+const buildItinerary = (days: number): typeof sampleItinerary => {
+  if (!Number.isFinite(days) || days <= 0 || sampleItinerary.length === 0) {
+    return [];
+  }
+
+  return Array.from({ length: Math.round(days) }, (_, index) => ({
+    ...sampleItinerary[index % sampleItinerary.length],
+    day: index + 1,
+  }));
+};
+
+// The visa fee is paid in cash USD at the border/airport, so it's not a
+// meaningful NPR line item — hide it from the breakdown when NPR is selected.
+const getVisibleBreakdownEntries = (
+  breakdown: Record<string, BreakdownItem>,
+  currency: Currency,
+): [string, BreakdownItem][] =>
+  Object.entries(breakdown).filter(([category]) => !(category === 'visa' && currency === 'NPR'));
+
+// Standard accommodation categories we want represented for every travel
+// style. Matching is keyword-based (case-insensitive substring) rather than
+// strict equality so it stays robust to minor differences in how the data
+// source labels each tier (e.g. "3 Star" vs "3-Star" vs "3★").
+const ACCOMMODATION_STYLE_KEYWORDS: Record<BudgetStyleId, string[]> = {
+  backpacker: ['hostel', 'budget', 'guesthouse', 'homestay'],
+  standard: ['guesthouse', 'homestay', '2 star', '2-star', '2★', 'budget'],
+  'mid-range': ['3 star', '3-star', '3★', '4 star', '4-star', '4★', 'boutique'],
+  luxury: ['4 star', '4-star', '4★', '5 star', '5-star', '5★', 'luxury', 'resort', 'boutique'],
+};
+
+const matchesAccommodationStyle = (tier: string, style: BudgetStyleId): boolean => {
+  const normalized = tier.toLowerCase();
+  return ACCOMMODATION_STYLE_KEYWORDS[style].some((keyword) => normalized.includes(keyword));
+};
+
+// Filters accommodationOptions to those relevant for a style, falling back
+// to the full (price-sorted) list if the keyword match comes up empty so the
+// Accommodation tab is never blank.
+const getAccommodationRecommendations = (style: BudgetStyleId): typeof accommodationOptions => {
+  const matched = accommodationOptions.filter((option) => matchesAccommodationStyle(option.tier, style));
+  if (matched.length > 0) {
+    return matched;
+  }
+  return [...accommodationOptions].sort((a, b) => a.priceUSD - b.priceUSD);
+};
+
 const calculateBudget = (input: BudgetInput): BudgetResult => {
   const { days, people, style, includeAttractions, includeVisa, selectedActivities, currency } = input;
   const styleData = getBudgetStyle(style);
@@ -107,7 +165,11 @@ const calculateBudget = (input: BudgetInput): BudgetResult => {
   const dailyActivities = (styleData.dailyBudgetUSD * styleData.breakdown.activities) / 100;
 
   const attractionFees = includeAttractions ? getTotalAttractionFees() : 0;
-  const visaCost = includeVisa ? getVisaCost(days) : 0;
+  // Visa fees are paid in cash USD at the border/airport — they're not part
+  // of an NPR-denominated budget, so exclude them from the total (not just
+  // hide the line item) whenever NPR is selected.
+  const applyVisa = includeVisa && currency !== 'NPR';
+  const visaCost = applyVisa ? getVisaCost(days) : 0;
 
   const selectedActivityCost = selectedActivities.reduce((total, activityId) => {
     const matched = activities.find((activity) => activity.id === activityId);
@@ -129,7 +191,7 @@ const calculateBudget = (input: BudgetInput): BudgetResult => {
     breakdown.attractions = { amount: attractionFees, percentage: 0 };
   }
 
-  if (includeVisa) {
+  if (applyVisa) {
     breakdown.visa = { amount: visaCost, percentage: 0 };
   }
 
@@ -177,14 +239,9 @@ const calculateBudget = (input: BudgetInput): BudgetResult => {
     recommendations: {
       attractions: styleMatchingAttractions.slice(0, 5),
       activities: styleMatchingActivities.slice(0, 5),
-      accommodation: accommodationOptions.filter((option) => {
-        if (style === 'backpacker') return option.tier === 'Backpacker';
-        if (style === 'standard') return option.tier === 'Mid-range' || option.tier === 'Budget';
-        if (style === 'mid-range') return option.tier === 'Mid-range' || option.tier === 'Mid-range/Upscale';
-        return option.tier === 'Luxury';
-      }),
+      accommodation: getAccommodationRecommendations(style),
       food: styleFood.slice(0, 5),
-      itinerary: sampleItinerary,
+      itinerary: buildItinerary(days),
     },
     summary: {
       style: styleData.name,
@@ -212,6 +269,8 @@ type ReverseBudgetInput = {
   people: number;
   style: BudgetStyleId;
   currency: Currency;
+  // null = let the calculator auto-suggest a trip length; a number = user override
+  preferredDays: number | null;
 };
 
 type ReverseBudgetResult = {
@@ -230,31 +289,58 @@ type ReverseBudgetResult = {
 };
 
 const calculateReverseBudget = (input: ReverseBudgetInput): ReverseBudgetResult | null => {
-  const { totalBudget, people, style } = input;
+  const { totalBudget, people, style, currency, preferredDays } = input;
   const styleData = getBudgetStyle(style);
 
-  if (totalBudget <= 0 || people <= 0) {
+  if (totalBudget <= 0 || people <= 0 || Number.isNaN(totalBudget) || Number.isNaN(people)) {
     return null;
   }
 
-  const visaCost = 33; // Average visa cost
-  const attractionFees = getTotalAttractionFees();
-  const budgetAfterFixed = totalBudget - visaCost - attractionFees;
+  // The budget is entered in whatever currency is selected, but every cost in
+  // the app (dailyBudgetUSD, attraction fees, visa cost) is defined in USD.
+  // Convert the entered amount to USD before doing any math with it.
+  const totalBudgetUSD = currency === 'NPR' ? totalBudget / EXCHANGE_RATE : totalBudget;
 
+  const attractionFees = getTotalAttractionFees();
+  const dailyCostPerPerson = styleData.dailyBudgetUSD;
+  const dailyCostGroup = dailyCostPerPerson * people;
+
+  // Visa cost depends on trip length (>15 days costs more), so estimate with
+  // the short-stay rate first, then re-check once we know roughly how long a
+  // trip this budget affords instead of hardcoding a single flat value.
+  // Visa fees are paid in cash USD at the border/airport, not out of an
+  // NPR-denominated budget, so exclude them from the math entirely when
+  // NPR is selected.
+  let visaCost = currency === 'NPR' ? 0 : getVisaCost(15);
+  let budgetAfterFixed = totalBudgetUSD - visaCost - attractionFees;
   if (budgetAfterFixed <= 0) {
     return null;
   }
 
-  const dailyCostPerPerson = styleData.dailyBudgetUSD;
-  const dailyCostGroup = dailyCostPerPerson * people;
-
-  const maxDays = Math.floor(budgetAfterFixed / dailyCostGroup);
-  const suggestedDays = Math.max(1, Math.min(maxDays, 7)); // Suggest up to 7 days
-
-  if (maxDays === 0) {
+  let maxDays = Math.floor(budgetAfterFixed / dailyCostGroup);
+  if (maxDays < 1) {
     return null;
   }
 
+  const refinedVisaCost = currency === 'NPR' ? 0 : getVisaCost(maxDays);
+  if (refinedVisaCost !== visaCost) {
+    visaCost = refinedVisaCost;
+    budgetAfterFixed = totalBudgetUSD - visaCost - attractionFees;
+    if (budgetAfterFixed <= 0) {
+      return null;
+    }
+    maxDays = Math.floor(budgetAfterFixed / dailyCostGroup);
+    if (maxDays < 1) {
+      return null;
+    }
+  }
+
+  const autoSuggestedDays = Math.max(1, Math.min(maxDays, 7)); // default suggestion, capped at a week
+  // Respect the user's chosen day count as long as it's affordable; otherwise fall back to the suggestion.
+  const suggestedDays =
+    preferredDays && preferredDays >= 1 && preferredDays <= maxDays ? preferredDays : autoSuggestedDays;
+
+  const finalVisaCost = currency === 'NPR' ? 0 : getVisaCost(suggestedDays);
   const costPerDay = (dailyCostPerPerson * people);
   const costPerPersonDaily = dailyCostPerPerson;
 
@@ -281,7 +367,7 @@ const calculateReverseBudget = (input: ReverseBudgetInput): ReverseBudgetResult 
       percentage: 0,
     },
     visa: {
-      amount: visaCost,
+      amount: finalVisaCost,
       percentage: 0,
     },
   };
@@ -306,17 +392,12 @@ const calculateReverseBudget = (input: ReverseBudgetInput): ReverseBudgetResult 
     suggestedDays,
     costPerDay,
     costPerPersonDaily,
-    itinerary: sampleItinerary.slice(0, suggestedDays),
+    itinerary: buildItinerary(suggestedDays),
     breakdown,
     recommendations: {
       attractions: styleMatchingAttractions.slice(0, 5),
       activities: styleMatchingActivities.slice(0, 5),
-      accommodation: accommodationOptions.filter((option) => {
-        if (style === 'backpacker') return option.tier === 'Backpacker';
-        if (style === 'standard') return option.tier === 'Mid-range' || option.tier === 'Budget';
-        if (style === 'mid-range') return option.tier === 'Mid-range' || option.tier === 'Mid-range/Upscale';
-        return option.tier === 'Luxury';
-      }),
+      accommodation: getAccommodationRecommendations(style),
       food: styleFood.slice(0, 5),
     },
   };
@@ -342,10 +423,18 @@ export default function BudgetPlanner() {
     people: 2,
     style: 'standard',
     currency: 'USD',
+    preferredDays: null,
   });
 
   const [reverseResult, setReverseResult] = useState<ReverseBudgetResult | null>(null);
   const [activeMode, setActiveMode] = useState<'forward' | 'reverse'>('forward');
+
+  // The Total Budget input is tracked as raw text, separate from the numeric
+  // value used for calculations. Binding the input directly to a number
+  // means React can't tell "0" typed after "0" apart from no change at all,
+  // which leaves stray/leading zeros stuck in the field while typing. Text
+  // state also lets the field go genuinely empty instead of snapping to "0".
+  const [totalBudgetText, setTotalBudgetText] = useState<string>(String(reverseBudgetData.totalBudget));
 
   useEffect(() => {
     setResult(calculateBudget(formData));
@@ -411,9 +500,52 @@ export default function BudgetPlanner() {
     }
 
     if (name === 'currency') {
+      const nextCurrency = value as Currency;
+      setReverseBudgetData((previous) => {
+        if (nextCurrency === previous.currency) return previous;
+        // Re-express the same purchasing power in the new currency instead of
+        // leaving the raw number unchanged (e.g. "1000" meaning $1000 one
+        // moment and Rs. 1000 the next).
+        const convertedBudget =
+          nextCurrency === 'NPR' ? previous.totalBudget * EXCHANGE_RATE : previous.totalBudget / EXCHANGE_RATE;
+        const roundedBudget = Math.round(convertedBudget);
+        setTotalBudgetText(String(roundedBudget));
+        return {
+          ...previous,
+          currency: nextCurrency,
+          totalBudget: roundedBudget,
+        };
+      });
+      return;
+    }
+
+    if (name === 'totalBudget') {
+      // Strip stray/leading zeros from the raw typed text (e.g. "05" -> "5",
+      // "00" -> "0") before it ever reaches state, and allow a genuinely
+      // empty string instead of forcing the field back to "0".
+      let raw = value.replace(/[^\d.]/g, '');
+      if (raw.includes('.')) {
+        const [whole, decimal] = raw.split('.');
+        raw = `${whole.replace(/^0+(?=\d)/, '') || '0'}.${decimal ?? ''}`;
+      } else {
+        raw = raw.replace(/^0+(?=\d)/, '');
+      }
+
+      setTotalBudgetText(raw);
+
+      const numericValue = raw === '' || raw === '.' ? 0 : Number(raw);
       setReverseBudgetData((previous) => ({
         ...previous,
-        currency: value as Currency,
+        totalBudget: Number.isNaN(numericValue) ? 0 : Math.max(0, numericValue),
+      }));
+      return;
+    }
+
+    if (name === 'preferredDays') {
+      const numericValue = Number(value);
+      setReverseBudgetData((previous) => ({
+        ...previous,
+        preferredDays: Number.isNaN(numericValue) ? null : numericValue,
       }));
       return;
     }
@@ -422,6 +554,10 @@ export default function BudgetPlanner() {
       ...previous,
       [name]: Number(value),
     }));
+  };
+
+  const resetPreferredDays = () => {
+    setReverseBudgetData((previous) => ({ ...previous, preferredDays: null }));
   };
 
   const selectedStyle = getBudgetStyle(formData.style);
@@ -571,7 +707,7 @@ export default function BudgetPlanner() {
                   >
                     {activities.map((activity) => (
                       <option key={activity.id} value={activity.id}>
-                        {activity.name} ({formatCurrency(activity.costUSD)})
+                        {activity.name} ({formatPriceOrUnavailable(activity.costUSD)})
                       </option>
                     ))}
                   </select>
@@ -622,7 +758,7 @@ export default function BudgetPlanner() {
                   {activeTab === 'breakdown' && (
                     <div className="space-y-4">
                       <h3 className="text-xl font-black">Cost breakdown</h3>
-                      {Object.entries(result.breakdown).map(([category, data]) => (
+                      {getVisibleBreakdownEntries(result.breakdown, result.summary.currency).map(([category, data]) => (
                         <div key={category}>
                           <div className="mb-1 flex items-center justify-between gap-4 text-sm text-slate-700">
                             <span className="capitalize">{category}</span>
@@ -661,7 +797,7 @@ export default function BudgetPlanner() {
                               <div className="mt-1 text-sm text-slate-600">{attraction.category}</div>
                             </div>
                             <div className="text-right text-sm font-semibold text-slate-900">
-                              {formatCurrency(attraction.entryFeeUSD, result.summary.currency)}
+                              {formatPriceOrUnavailable(attraction.entryFeeUSD, result.summary.currency)}
                             </div>
                           </div>
                           <p className="mt-2 text-sm text-slate-600">{attraction.notes}</p>
@@ -681,7 +817,7 @@ export default function BudgetPlanner() {
                               <div className="mt-1 text-sm text-slate-600">{activity.category}</div>
                             </div>
                             <div className="text-right text-sm font-semibold text-slate-900">
-                              {formatCurrency(activity.costUSD, result.summary.currency)}
+                              {formatPriceOrUnavailable(activity.costUSD, result.summary.currency)}
                             </div>
                           </div>
                           <p className="mt-2 text-sm text-slate-600">{activity.notes}</p>
@@ -701,7 +837,8 @@ export default function BudgetPlanner() {
                               <div className="mt-1 text-sm text-slate-600">{stay.tier}</div>
                             </div>
                             <div className="text-right text-sm font-semibold text-slate-900">
-                              {formatCurrency(stay.priceUSD, result.summary.currency)}/night
+                              {formatPriceOrUnavailable(stay.priceUSD, result.summary.currency)}
+                              {stay.priceUSD > 0 && '/night'}
                             </div>
                           </div>
                           <p className="mt-2 text-sm text-slate-600">{stay.notes}</p>
@@ -759,12 +896,12 @@ export default function BudgetPlanner() {
                       {reverseBudgetData.currency === 'USD' ? '$' : 'Rs.'}
                     </span>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
                       name="totalBudget"
-                      value={reverseBudgetData.totalBudget}
+                      value={totalBudgetText}
                       onChange={handleReverseBudgetChange}
-                      min="100"
-                      step="100"
+                      placeholder="0"
                       className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-slate-800 outline-none focus:border-slate-900"
                     />
                   </div>
@@ -782,6 +919,43 @@ export default function BudgetPlanner() {
                     className="w-full accent-slate-900"
                   />
                   <div className="mt-2 text-right text-lg font-black">{reverseBudgetData.people} people</div>
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label className="block text-sm font-semibold text-slate-700">Trip Length</label>
+                    {reverseBudgetData.preferredDays !== null && (
+                      <button
+                        type="button"
+                        onClick={resetPreferredDays}
+                        className="text-xs font-bold text-blue-600 hover:underline"
+                      >
+                        Reset to suggested
+                      </button>
+                    )}
+                  </div>
+                  {reverseResult ? (
+                    <>
+                      <input
+                        type="range"
+                        min="1"
+                        max={Math.max(1, reverseResult.maxDays)}
+                        name="preferredDays"
+                        value={reverseResult.suggestedDays}
+                        onChange={handleReverseBudgetChange}
+                        className="w-full accent-slate-900"
+                      />
+                      <div className="mt-2 flex items-center justify-between text-sm text-slate-600">
+                        <span>1 day</span>
+                        <span className="text-lg font-black text-slate-900">
+                          {reverseResult.suggestedDays} {reverseResult.suggestedDays === 1 ? 'day' : 'days'}
+                        </span>
+                        <span>{reverseResult.maxDays} days max</span>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-sm text-slate-500">Enter a budget above to unlock day selection.</p>
+                  )}
                 </div>
 
                 <div>
@@ -879,7 +1053,7 @@ export default function BudgetPlanner() {
                 <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
                   <h3 className="text-2xl font-black">Budget Breakdown</h3>
                   <div className="space-y-3">
-                    {Object.entries(reverseResult.breakdown).map(([category, data]) => (
+                    {getVisibleBreakdownEntries(reverseResult.breakdown, reverseBudgetData.currency).map(([category, data]) => (
                       <div key={category}>
                         <div className="mb-1 flex items-center justify-between gap-4 text-sm text-slate-700">
                           <span className="capitalize">{category}</span>
@@ -909,7 +1083,7 @@ export default function BudgetPlanner() {
                             <div className="mt-1 text-sm text-slate-600">{attraction.category}</div>
                           </div>
                           <div className="text-right text-sm font-semibold text-slate-900">
-                            {formatCurrency(attraction.entryFeeUSD, reverseBudgetData.currency)}
+                            {formatPriceOrUnavailable(attraction.entryFeeUSD, reverseBudgetData.currency)}
                           </div>
                         </div>
                         <p className="mt-2 text-sm text-slate-600">{attraction.notes}</p>
@@ -929,7 +1103,8 @@ export default function BudgetPlanner() {
                             <div className="mt-1 text-sm text-slate-600">{stay.tier}</div>
                           </div>
                           <div className="text-right text-sm font-semibold text-slate-900">
-                            {formatCurrency(stay.priceUSD, reverseBudgetData.currency)}/night
+                            {formatPriceOrUnavailable(stay.priceUSD, reverseBudgetData.currency)}
+                            {stay.priceUSD > 0 && '/night'}
                           </div>
                         </div>
                         <p className="mt-2 text-sm text-slate-600">{stay.notes}</p>

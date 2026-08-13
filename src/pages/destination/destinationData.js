@@ -1,13 +1,13 @@
 export const destinationsData = [
     {
-        id: "basantapur",
-        name: "Basantapur",
+        id: "kathmandu",
+        name: "Kathmandu Darbar Square",
         location: "Kathmandu, Nepal",
 
         description:
             "Enter the historic heart of Kathmandu and explore its courtyards, temples, and layered Newar architecture.",
 
-        image: "/img/about.webp",
+        image: "/img/bhaktapur.jpg",
 
         available: true,
 
@@ -60,45 +60,97 @@ export const destinationsData = [
                     description:
                         "Taleju Temple rises above the surrounding structures and is one of the most visually dominant monuments within the historic square.",
                 },
+                {
+                    id: "maju-dega",
+                    label: "Maju Dega",
+                    position: [0.4, 0, -0.2],
+                    description:
+                        "Maju Dega is a prominent nine-stage Shiva temple offering sweeping views over Basantapur from its majestic stepped plinth.",
+                },
+                {
+                    id: "kal-bhairav",
+                    label: "Kal Bhairav",
+                    position: [0.1, 0, -0.1],
+                    description:
+                        "A fierce stone image of Lord Shiva in his destructive manifestation. It was believed that speaking a lie while standing before it would bring immediate death.",
+                },
             ],
         },
     },
 
     {
-        id: "patan",
-        name: "Patan",
-        location: "Lalitpur, Nepal",
-
-        description:
-            "Explore the intricate courtyards, temples, and metalwork traditions of Patan's historic center.",
-
-        image: "/img/about.webp",
-
-        available: false,
-
-        model: {
-            glbUrl: "/models/patan.glb",
-            cameraPath: [],
-            hotspots: [],
-        },
-    },
-
-    {
-        id: "kathmandu",
-        name: "Kathmandu",
+        id: "basantapur",
+        name: "Basantapur Darbar Square",
         location: "Kathmandu, Nepal",
 
         description:
-            "A future exploration through another layer of Kathmandu's architectural and cultural landscape.",
+            "Explore the intricate courtyards, temples, and metalwork traditions of Basantapur's historic center.",
 
-        image: "/img/about.webp",
+        image: "/img/kathmandu.jpeg",
 
-        available: false,
+        available: true,
+
+        model: {},
+    },
+
+
+    {
+        id: "patan",
+        name: "Patan Darbar Square",
+        location: "Lalitpur, Nepal",
+
+        description:
+            "Explore the stone-paved courtyards, Krishna Mandir, and the finest Newar metalwork traditions of Lalitpur.",
+
+        image: "/img/pashupatinath.jpg",
+
+        available: true,
 
         model: {
-            glbUrl: "/models/kathmandu.glb",
-            cameraPath: [],
-            hotspots: [],
+            glbUrl: "/models/patan.glb",
+
+            cameraPath: [
+                {
+                    position: [8, 5, 10],
+                    lookAt: [0, 0.8, 0],
+                },
+                {
+                    position: [5.5, 3.5, 6],
+                    lookAt: [0.2, 1.0, -0.4],
+                },
+                {
+                    position: [-4.5, 3, 5],
+                    lookAt: [-0.5, 0.9, 0.3],
+                },
+                {
+                    position: [4, 4, -5],
+                    lookAt: [1.1, 1.2, 0.1],
+                },
+            ],
+
+            hotspots: [
+                {
+                    id: "krishna-mandir",
+                    label: "Krishna Mandir",
+                    position: [0.3, 0, 0.1],
+                    description:
+                        "A stunning stone temple built in the Shikhara style by King Siddhi Narsingh Malla in the 17th century, dedicated to Lord Krishna.",
+                },
+                {
+                    id: "patan-museum",
+                    label: "Patan Museum",
+                    position: [-0.2, 0, 0.3],
+                    description:
+                        "Housed in the former royal palace, this museum showcases the finest collection of Newar bronze and repoussé metalwork in the valley.",
+                },
+                {
+                    id: "golden-temple",
+                    label: "Golden Temple",
+                    position: [0.1, 0, -0.3],
+                    description:
+                        "Hiranya Varna Mahavihar, a 12th-century Buddhist monastery with a golden façade and intricate metalwork, located steps from the square.",
+                },
+            ],
         },
     },
-];
+];

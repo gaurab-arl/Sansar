@@ -11,8 +11,8 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 
 import Destination from "./pages/destination/Destination";
-import Discover from "./pages/discover/Discoverpage";
-import BudgetPlanner from "./pages/BudgetPlanner";
+import Discover from "./pages/discover/as";
+import BudgetPlanner from "./pages/BudgetPlanner1";
 
 interface LenisOptions {
   lerp: number;

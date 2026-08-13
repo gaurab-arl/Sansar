@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Link } from "react-router-dom"
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -154,18 +155,18 @@ export default function Hero() {
                             Immerse in timeless ancient alleys, misty alpine valleys, and the breathtaking roof of the world.
                         </p>
                         <div className="mt-8 flex flex-wrap gap-4 animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
-                            <a
-                                href="#destinations"
+                            <Link
+                                to="/destination"
                                 className="rounded-none bg-[#c47a4a] px-8 py-3.5 font-jost text-sm font-medium text-white transition-all duration-300 hover:bg-[#b06a3e] hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-[#c47a4a]/25"
                             >
                                 Explore Destinations
-                            </a>
-                            <a
-                                href="#gallery"
+                            </Link>
+                            <Link
+                                to="/discover"
                                 className="rounded-none border border-white/20 bg-white/5 px-7 py-3.5 font-jost text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/15 hover:-translate-y-0.5"
                             >
                                 View Gallery
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>

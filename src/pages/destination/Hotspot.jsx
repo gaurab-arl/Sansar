@@ -20,8 +20,8 @@ export default function Hotspot({ hotspot, isActive, onSelect }) {
                     />
                     <span
                         className={`relative w-2.5 h-2.5 rounded-full border transition-colors ${isActive
-                                ? "bg-black border-black"
-                                : "bg-white/80 border-black group-hover/hotspot:bg-black"
+                            ? "bg-black border-black"
+                            : "bg-white/80 border-black group-hover/hotspot:bg-black"
                             }`}
                     />
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 whitespace-nowrap px-2 py-1 rounded-md bg-white/80 backdrop-blur-md border border-black/20 text-[9px] uppercase tracking-widest text-black opacity-0 group-hover/hotspot:opacity-100 transition-opacity">

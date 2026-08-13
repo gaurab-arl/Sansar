@@ -183,10 +183,11 @@ const BentoCard = ({
 
     return (
         <div
-            className={`relative size-full min-h-[220px] overflow-hidden rounded-xl bg-gradient-to-br from-[#2d5a3d]/15 to-[#c47a4a]/15 group transition-all duration-500 hover:shadow-2xl ${containerClass}`}
+            className={`relative size-full min-h-[220px] overflow-hidden rounded-xl bg-gradient-to-br from-[#2d5a3d]/15 to-[#c47a4a]/15 group transition-all duration-500 hover:shadow-2xl cursor-pointer ${containerClass}`}
             ref={containerRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleLeave}
+            onClick={() => window.open(`https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`, '_blank')}
         >
             {showImage && (
                 <div className="absolute inset-0">
