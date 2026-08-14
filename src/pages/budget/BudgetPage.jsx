@@ -15,7 +15,7 @@ import {
 
 export default function Budget() {
   const [selectedTier, setSelectedTier] = useState("Backpacker");
-  const [segments, setSegments] = useState(itinerarySegments);
+  const [segments] = useState(itinerarySegments);
 
   const handleAddSegment = () => {
     console.log("Add segment clicked");

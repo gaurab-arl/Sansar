@@ -649,12 +649,11 @@ export default function DurbarSquare3D() {
     }
 
     /* ---- shop-house rows along the streets, offset from road centerlines ---- */
-    function shopRow(x0, z0, x1, z1, count, facing, offset) {
+    function shopRow(x0, z0, x1, z1, count, facing) {
       const dx = (x1 - x0) / count, dz = (z1 - z0) / count;
       for (let i = 0; i < count; i++) {
         const x = x0 + dx * (i + 0.5), z = z0 + dz * (i + 0.5);
         const g = group(x, z, facing);
-        g.position.x += Math.cos(facing) * offset * 0;
         const w = Math.max(4, Math.abs(dx || dz) * 0.82), depth = 4.2, h = rnd(4.6, 6.4);
         const wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, depth), Math.random() > 0.5 ? M.brickWall : M.brickDeep);
         wall.position.y = h / 2; wall.castShadow = true; wall.receiveShadow = true; g.add(wall);

@@ -234,7 +234,7 @@ export default function Story() {
                                             }`}
                                             loading="eager"
                                             onLoad={() => handleImageLoad(idx)}
-                                            onError={(e) => {
+                                            onError={() => {
                                                 console.error(`Failed to load image: ${img.src}`);
                                                 // Mark as loaded to hide skeleton even if image fails
                                                 handleImageLoad(idx);

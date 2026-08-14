@@ -1,23 +1,3 @@
-import AnimatedTitle from "./AnimatedTitle";
-import Button from "./Button";
-
-type ImageClipBoxProps = {
-    src: string,
-    clipClass: string
-}
-
-const ImageClipBox = ({ src, clipClass }: ImageClipBoxProps) => {
-    return (
-        <div className={`absolute ${clipClass}`}>
-            <img
-                src={src}
-                alt="clip"
-                className="w-full h-full object-cover"
-            />
-        </div>
-    );
-};
-
 const Contact = () => {
     return (
         <div id="contact" className="py-20 w-full min-h-screen px-6 md:px-16 bg-gradient-to-b from-[#f5faf7] via-[#eef5f0] to-[#e5eee8] overflow-hidden">
