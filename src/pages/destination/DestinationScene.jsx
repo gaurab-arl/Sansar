@@ -1,3 +1,7 @@
+
+
+
+DestinationScene.jsx
 import { Suspense, useMemo } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ContactShadows, Environment, Html, useGLTF } from "@react-three/drei";
@@ -58,7 +62,7 @@ function CameraController({
     const nextPosition = useMemo(() => new THREE.Vector3(), []);
     const currentLookAt = useMemo(() => new THREE.Vector3(), []);
     const nextLookAt = useMemo(() => new THREE.Vector3(), []);
-    
+
     const targetPosition = useMemo(() => new THREE.Vector3(), []);
     const targetLookAt = useMemo(() => new THREE.Vector3(), []);
     const interpolatedLookAt = useMemo(() => new THREE.Vector3(), []);
@@ -104,7 +108,7 @@ function CameraController({
         const smoothStep = 1 - Math.exp(-8 * delta);
         camera.position.lerp(targetPosition, smoothStep);
         interpolatedLookAt.lerp(targetLookAt, smoothStep);
-        
+
         camera.lookAt(interpolatedLookAt);
     });
 
@@ -261,3 +265,4 @@ useGLTF.preload("/models/basantapur.glb");
 useGLTF.preload("/models/baktapur.glb");
 useGLTF.preload("/models/ktm.glb");
 useGLTF.preload("/models/patan.glb");
+

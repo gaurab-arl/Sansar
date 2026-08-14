@@ -3,14 +3,19 @@ import DestinationScene from "./DestinationScene";
 import { ChevronLeft, ChevronRight, MapPin, RotateCcw, X } from "lucide-react";
 
 export default function ModelExperience({ destination, onClose }) {
-    const [progress, setProgress] = useState(0);
     const [selectedHotspot, setSelectedHotspot] = useState(null);
     const hotspots = useMemo(() => destination.model.hotspots ?? [], [destination]);
-    const scrollHeight = 400; // 400vh for scrolling
 
     const selectedIndex = selectedHotspot
         ? hotspots.findIndex((hotspot) => hotspot.id === selectedHotspot.id)
         : -1;
+
+    // Progress now reflects which hotspot is active (drives the camera
+    // controller) instead of page scroll position.
+    const progress =
+        selectedIndex >= 0 && hotspots.length > 1
+            ? selectedIndex / (hotspots.length - 1)
+            : 0;
 
     const selectHotspotByIndex = (index) => {
         if (!hotspots.length) {
@@ -22,7 +27,6 @@ export default function ModelExperience({ destination, onClose }) {
     };
 
     useEffect(() => {
-        setProgress(0);
         setSelectedHotspot(null);
     }, [destination.id]);
 
@@ -32,46 +36,12 @@ export default function ModelExperience({ destination, onClose }) {
               fixed
               inset-0
               z-[100]
-              overflow-y-auto
-              overflow-x-hidden
+              overflow-hidden
               bg-[#F7F7F2]
             "
             data-lenis-prevent="true"
-            onScroll={(e) => {
-                const element = e.currentTarget;
-
-                const maxScroll =
-                    element.scrollHeight -
-                    element.clientHeight;
-
-                const value =
-                    maxScroll > 0
-                        ? element.scrollTop / maxScroll
-                        : 0;
-
-                setProgress(
-                    Math.max(
-                        0,
-                        Math.min(1, value)
-                    )
-                );
-            }}
         >
-            <div className="fixed left-0 top-0 z-30 h-1 w-full bg-[#1f3a2e]/10">
-                <div
-                    className="h-full bg-[#c47a4a] transition-[width] duration-150"
-                    style={{ width: `${Math.round(progress * 100)}%` }}
-                />
-            </div>
-
-            {/* SCROLL DISTANCE */}
-            <div
-                style={{
-                    height: `${scrollHeight}vh`,
-                }}
-            />
-
-            {/* STICKY EXPERIENCE */}
+            {/* EXPERIENCE */}
             <div
                 className="
                 pointer-events-none
@@ -92,8 +62,8 @@ export default function ModelExperience({ destination, onClose }) {
 
             {/* HEADER / UI */}
             <div className="fixed left-4 right-4 top-6 z-10 flex items-start justify-between gap-4 md:left-6 md:right-6">
-                <button 
-                    onClick={onClose} 
+                <button
+                    onClick={onClose}
                     className="flex shrink-0 items-center gap-2 rounded-full bg-[#1f3a2e] px-4 py-2 shadow-lg transition-colors hover:bg-[#2d5a3d] group"
                 >
                     <X size={16} className="text-white group-hover:scale-110 transition-transform" />
@@ -108,7 +78,7 @@ export default function ModelExperience({ destination, onClose }) {
                         {destination.name}
                     </h2>
                     <p className="mt-2 font-jost text-xs leading-5 text-[#5a7a6a]">
-                        Scroll through the model path or choose a landmark below.
+                        Choose a landmark below to explore the model.
                     </p>
                 </div>
             </div>
@@ -141,11 +111,10 @@ export default function ModelExperience({ destination, onClose }) {
                                 <button
                                     key={hotspot.id}
                                     onClick={() => setSelectedHotspot(hotspot)}
-                                    className={`flex min-h-12 items-center gap-3 rounded-md border px-3 py-2 text-left transition-colors ${
-                                        isActive
+                                    className={`flex min-h-12 items-center gap-3 rounded-md border px-3 py-2 text-left transition-colors ${isActive
                                             ? "border-[#c47a4a] bg-[#fff8ee] text-[#1f3a2e]"
                                             : "border-[#d8e5dc] bg-white/70 text-[#5a7a6a] hover:border-[#c47a4a]/50 hover:text-[#1f3a2e]"
-                                    }`}
+                                        }`}
                                 >
                                     <span className="font-jost text-[10px] font-semibold uppercase tracking-widest text-[#c47a4a]">
                                         {String(index + 1).padStart(2, "0")}
@@ -187,7 +156,7 @@ export default function ModelExperience({ destination, onClose }) {
                     </div>
                 )}
             </div>
-            
+
             {/* HOTSPOT UI SIDEBAR */}
             <div className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-[#f5faf7]/95 backdrop-blur-2xl border-l border-[#e8f0ec] shadow-2xl z-20 transform transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${selectedHotspot ? 'translate-x-0' : 'translate-x-full'}`}>
                 <div className="p-8 h-full flex flex-col mt-20">

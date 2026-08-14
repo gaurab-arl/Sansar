@@ -1,6 +1,11 @@
 import { X } from "lucide-react";
 
-export default function VideoModal({ isOpen, onClose }) {
+type videoModalProps = {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+export default function VideoModal({ isOpen, onClose }:videoModalProps) {
     if (!isOpen) return null;
 
     return (

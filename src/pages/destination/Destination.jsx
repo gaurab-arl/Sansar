@@ -2,8 +2,7 @@ import { useState } from "react";
 
 import DestinationGrid from "./DestinationGrid";
 import ModelExperience from "./ModelExperience";
-import DurbarSquare3D from "./durbar";
-import { destinationsData } from "./destinationData";
+import { destinationsData } from "../../data/destinationData";
 
 export default function Destination() {
   const [activeDestination, setActiveDestination] =

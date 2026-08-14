@@ -1,7 +1,11 @@
-import HeroContent from "./HeroContent";
-import HeroVideo from "./HeroVideo";
 
-export default function Hero({ onVideoOpen }) {
+import HeroVideo from "./HeroVideo"
+import HeroContent from "./HeroContent";
+
+type HeroProps = {
+    onVideoOpen: () => void;
+}
+export default function Hero({ onVideoOpen }: HeroProps) {
     return (
         <section className="relative w-full min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-[#f5faf7] via-[#eef5f0] to-[#e5eee8]">
 

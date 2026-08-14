@@ -12,7 +12,7 @@ import Footer from "./components/Footer";
 
 import Destination from "./pages/destination/Destination";
 import Discover from "./pages/discover/Discovers";
-import BudgetPlanner from "./pages/BudgetPlanner1";
+import BudgetPlanner from "./pages/budget/BudgetPlanner1";
 
 interface LenisOptions {
   lerp: number;
@@ -59,6 +59,7 @@ export default function App() {
         } />
 
         {/* DESTINATION */}
+
         <Route path="/destination" element={<Destination />} />
 
         {/* DISCOVER */}

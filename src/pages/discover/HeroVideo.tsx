@@ -1,7 +1,11 @@
 import { Play } from "lucide-react";
 import { IMG } from "../../data/Features";
 
-export default function HeroVideo({ onClick }) {
+type HeroVideoProps = {
+    onClick: () => void;
+}
+
+export default function HeroVideo({ onClick }: HeroVideoProps) {
     return (
         <div className="relative w-full max-w-[480px] mx-auto">
 

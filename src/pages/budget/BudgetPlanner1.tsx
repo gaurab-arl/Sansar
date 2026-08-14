@@ -11,7 +11,7 @@ import {
   type Attraction,
   type FoodItem,
   type BudgetStyle,
-} from '../data/kathmanduData';
+} from '../../data/kathmanduData';
 
 type BudgetStyleId = 'backpacker' | 'standard' | 'mid-range' | 'luxury';
 type Currency = 'USD' | 'NPR';

@@ -40,10 +40,10 @@ export const destinationsData = [
             hotspots: [
                 {
                     id: "kasthamandap",
-                    label: "Kasthamandap",
+                    label: "Gaddi Baithak",
                     position: [-0.45, 0.18, -0.5],
                     description:
-                        "Kasthamandap is one of the historic wooden structures associated with Basantapur Durbar Square and Kathmandu's traditional architectural heritage.",
+                        "Gaddi Baithak is one of the historic European structures associated with Basantapur Durbar Square and Kathmandu's traditional architectural heritage.",
                 },
 
                 {
@@ -87,7 +87,7 @@ export const destinationsData = [
         description:
             "Explore the stone-paved courtyards, Krishna Mandir, and the finest Newar metalwork traditions of Lalitpur.",
 
-        image: "/img/boudhanath.jpg",
+        image: "/img/images.jpeg",
 
         available: true,
 
