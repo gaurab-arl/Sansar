@@ -49,7 +49,7 @@ export default function Hero() {
             videoRef.current.addEventListener('loadeddata', () => {
                 setIsLoading(false);
             });
-            
+
             // Force hardware acceleration for smooth playback
             videoRef.current.style.transform = 'translateZ(0)';
             videoRef.current.style.backfaceVisibility = 'hidden';
@@ -69,7 +69,10 @@ export default function Hero() {
                 </div>
             )}
 
-            <div id="video-frame" className="relative h-screen w-full overflow-hidden">
+            <div
+                id="video-frame"
+                className="relative h-screen w-full overflow-hidden">
+
                 {/* Video Background - Enhanced Vibrancy */}
                 <video
                     ref={videoRef}
@@ -85,9 +88,9 @@ export default function Hero() {
                     }}
                 >
                     <source src="/videos/video.mp4" type="video/mp4" />
-                    <img 
-                        src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1600&h=900&fit=crop&crop=center" 
-                        alt="Nepal Himalayas" 
+                    <img
+                        src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1600&h=900&fit=crop&crop=center"
+                        alt="Nepal Himalayas"
                         className="absolute inset-0 h-full w-full object-cover"
                     />
                 </video>
@@ -117,7 +120,7 @@ export default function Hero() {
                         ];
                         const color = colors[Math.floor(Math.random() * colors.length)];
                         const isRound = Math.random() > 0.4;
-                        
+
                         return (
                             <div
                                 key={i}
@@ -146,7 +149,7 @@ export default function Hero() {
                             DISCOVER NEPAL
                         </p>
                         <h1 className="font-cormorant text-[clamp(2.8rem,7vw,5rem)] font-light italic leading-[1.05] text-white hero-title animate-fadeInUp">
-                            Where the Himalayas<br/>
+                            Where the Himalayas<br />
                             <span className="not-italic font-light text-[0.85em] tracking-wide text-white/80">
                                 touch the sacred sky.
                             </span>
@@ -175,7 +178,7 @@ export default function Hero() {
                 <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-1.5 text-white/20 animate-bounce">
                     <span className="font-jost text-[8px] font-light uppercase tracking-[0.2em]">Scroll</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M12 5v14M5 12l7 7 7-7"/>
+                        <path d="M12 5v14M5 12l7 7 7-7" />
                     </svg>
                 </div>
             </div>
