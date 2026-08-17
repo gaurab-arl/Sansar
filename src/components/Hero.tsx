@@ -106,7 +106,7 @@ export default function Hero() {
                     <div className="absolute inset-0 bg-gradient-to-bl from-[#2b5a44]/5 via-transparent to-[#c47a4a]/5 mix-blend-overlay" />
                 </div>
 
-                {/* Floating Particles - Reduced count for cleaner look */}
+                {/* Floating Particles - Reduced count for cleaner look
                 <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
                     {[...Array(15)].map((_, i) => {
                         const size = 3 + Math.random() * 12;
@@ -133,14 +133,14 @@ export default function Hero() {
                                     background: color,
                                     borderRadius: isRound ? '50%' : '30% 70% 50% 50%',
                                     opacity: 0.08 + Math.random() * 0.15,
-                                    filter: `blur(${0.5 + Math.random() * 1.5}px)`,
+                                    filter: `blur(${0.5 + Maths.random() * 1.5}px)`,
                                     animation: `floatPetal ${duration}s ${delay}s infinite cubic-bezier(0.45, 0, 0.55, 1)`,
                                     boxShadow: `0 0 20px ${color}`,
                                 }}
                             />
                         );
                     })}
-                </div>
+                </div> */}
 
                 {/* Hero Content - More transparent and positioned better */}
                 <div className="hero-content relative z-20 flex h-full flex-col justify-center px-6 md:px-16 lg:px-24">
