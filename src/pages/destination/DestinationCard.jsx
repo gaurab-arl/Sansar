@@ -1,3 +1,6 @@
+import { ArrowUpRight } from "lucide-react";
+
+
 export default function DestinationCard({
   destination,
   onEnterModel,
@@ -128,7 +131,7 @@ export default function DestinationCard({
             Enter Place
 
             <span className="material-symbols-outlined text-[16px]">
-              arrow_forward
+              <ArrowUpRight />
             </span>
           </button>
         ) : (
